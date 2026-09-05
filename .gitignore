@@ -1,0 +1,28 @@
+*.pkt.lock
+*.tmp
+*.bak
+*~
+~$*
+.DS_Store
+Thumbs.db
+
+# Local agent state and historical machine-specific notes
+/.agents/
+/.codex/
+/.project/archive/
+/.project/local/
+
+# Credentials and private key material
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+
+# Proprietary installers and locally built packages
+*.deb
+*.AppImage
+*.pkg.tar.*
