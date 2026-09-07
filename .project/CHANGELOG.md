@@ -1,5 +1,13 @@
 # Changelog
 
+## 2026-09-07 — Prepared the first hands-on HQ assembly step
+
+- Rechecked the workspace: no `.pkt` or `.cfg` files are present; Packet Tracer package 9.0.1-1 remains installed.
+- Split the initial assembly into an eight-device HQ working layout followed by completion of the existing 19-device design. Kept v01 and B1 reserved for the complete topology.
+- Specified manual cable types and exact port selection in the existing build sheet, with a Packet Tracer help reference.
+- Statically checked the HQ subset, all 19 planned links, port uniqueness, and 22 internal documentation links; started the installed Packet Tracer launcher for interactive work.
+- Defined the working-file and screenshot handoff paths. Device placement, save/reopen, and network validation remain pending direct Packet Tracer interaction.
+
 ## 2026-09-05 — Prepared the documentation snapshot for publication
 
 - Included the README, network build sheet, validation checklist, diagram, configuration export guide, incident template, and current working notes in the publication scope.

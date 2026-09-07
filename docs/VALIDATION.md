@@ -19,6 +19,8 @@
 
 Run relevant checks immediately after each configuration slice. B4 needs routed connectivity for branch management and is completed when that path exists. B5 may have a transient DR election period; record the settled neighbor state. Command support must be checked on the actual model; record a supported alternative if needed.
 
+The HQ-only working file is an interim layout review. Its eight devices and eight links are only part of B1; B1 remains not run until the complete 19-device/19-link v01 file is checked and reopened.
+
 ## Policy coverage
 
 Use the individual TP IDs in result entries even where the table groups their setup. Repeat checks at both branches and all three guest zones. For a limited permit, also try an unlisted protocol with a known working destination service or use ACL evidence to establish the intended denial.

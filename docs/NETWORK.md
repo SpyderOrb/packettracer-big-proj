@@ -25,20 +25,20 @@ Two HQ switches use one two-member LACP EtherChannel. Make `HQ-SW1` the STP root
 
 Total: **19 devices**. Cisco documents three onboard GE ports on the physical 2911; this supports the model choice but does not verify Packet Tracer behavior. [Cisco hardware guide](https://www.cisco.com/c/en/us/td/docs/routers/access/2900/hardware/installation/guide/Hardware_Installation_Guide/Overview.html)
 
-| Device / port | Peer / port | Intended use |
-|---|---|---|
-| HQ-R1 G0/0 | HQ-SW1 G0/1 | HQ VLAN trunk |
-| KAT-R1 G0/0 | KAT-SW1 G0/1 | Katowice VLAN trunk |
-| RZE-R1 G0/0 | RZE-SW1 G0/1 | Rzeszów VLAN trunk |
-| HQ-SW1 F0/23 | HQ-SW2 F0/23 | Port-channel 1 member |
-| HQ-SW1 F0/24 | HQ-SW2 F0/24 | Port-channel 1 member |
-| HQ-R1 G0/1 | WAN-SW F0/1 | OSPF transit, access VLAN 900 |
-| KAT-R1 G0/1 | WAN-SW F0/2 | OSPF transit, access VLAN 900 |
-| RZE-R1 G0/1 | WAN-SW F0/3 | OSPF transit, access VLAN 900 |
-| HQ-R1 G0/2 | ISP-R1 G0/0 | Internet edge |
-| ISP-R1 G0/1 | EXT-SRV1 FastEthernet0 | External services LAN |
+| Device / port | Peer / port | Cable | Intended use |
+|---|---|---|---|
+| HQ-R1 G0/0 | HQ-SW1 G0/1 | Copper Straight-Through | HQ VLAN trunk |
+| KAT-R1 G0/0 | KAT-SW1 G0/1 | Copper Straight-Through | Katowice VLAN trunk |
+| RZE-R1 G0/0 | RZE-SW1 G0/1 | Copper Straight-Through | Rzeszów VLAN trunk |
+| HQ-SW1 F0/23 | HQ-SW2 F0/23 | Copper Cross-Over | Port-channel 1 member |
+| HQ-SW1 F0/24 | HQ-SW2 F0/24 | Copper Cross-Over | Port-channel 1 member |
+| HQ-R1 G0/1 | WAN-SW F0/1 | Copper Straight-Through | OSPF transit, access VLAN 900 |
+| KAT-R1 G0/1 | WAN-SW F0/2 | Copper Straight-Through | OSPF transit, access VLAN 900 |
+| RZE-R1 G0/1 | WAN-SW F0/3 | Copper Straight-Through | OSPF transit, access VLAN 900 |
+| HQ-R1 G0/2 | ISP-R1 G0/0 | Copper Cross-Over | Internet edge |
+| ISP-R1 G0/1 | EXT-SRV1 FastEthernet0 | Copper Cross-Over | External services LAN |
 
-Use Packet Tracer's automatic cable selection and verify the chosen ports. The following nine access links use endpoint `FastEthernet0`:
+Select the cable type manually under Connections, then choose the exact ports in the table. `G` means GigabitEthernet and `F` means FastEthernet. Use **Copper Straight-Through** for all nine access links below, with endpoint port `FastEthernet0`. Cable choices follow the [Packet Tracer connection guide](https://tutorials.ptnetacad.net/help/default/connectionsLinks.htm); actual link behavior still needs checking in the installed simulator.
 
 | Switch / port | Endpoint | VLAN | Address |
 |---|---|---:|---|
@@ -114,7 +114,9 @@ Permit the specific DHCP relay exchanges, OSPF control traffic, and replies need
 ## First Packet Tracer checkpoint
 
 1. Open Cisco Packet Tracer 9.0.1. Confirm 2911 and 2960-24TT availability and the port labels above; record differences here before using a substitute.
-2. Place and name the 19 devices. Group them as HQ, Katowice, Rzeszów, Transit, and Simulated Internet. Use English labels.
-3. Cable the 19 links in the two link tables. In a fresh unconfigured topology, router ports may be administratively down and one parallel switch link may be STP-blocked; this is not yet a connectivity test.
-4. Save `packet-tracer/checkpoints/HQ-Branches-NOC-Lab_v01_physical-topology.pkt`. Close and reopen that exact file; check device names, ports, and both EtherChannel candidate links.
-5. Record **B1** in [Validation](VALIDATION.md) with the checkpoint name and an actual Packet Tracer screenshot. Then begin VLAN/trunk configuration. Later checks follow configure → test → save → export; no separate planning approval round is required for routine configuration.
+2. Start with **HQ only: eight devices** — HQ-R1, HQ-SW1, HQ-SW2, HQ-SRV1, HQ-PC1, HQ-PC2, IT-PC1, and HQ-GUEST1. Set these display names and cable the eight HQ-only links from the tables. Display names identify devices on the canvas; IOS hostnames will be configured in Block 2.
+3. Save this partial build as `packet-tracer/HQ-Branches-NOC-Lab_working.pkt`, reopen it, and capture `docs/evidence/working_hq_topology.png` with readable names and ports. This is an interim layout review, not a completed B1 test. Use a new working filename if a previous working copy needs preserving.
+4. Add the two branches, WAN-SW, ISP-R1, and EXT-SRV1 using the same tables. The complete layout must have **19 devices and 19 links**, grouped as HQ, Katowice, Rzeszów, Transit, and Simulated Internet. Use English labels.
+5. In a fresh unconfigured topology, router ports may be administratively down and one parallel switch link may be STP-blocked; this is not yet a connectivity test. Record unexpected observations instead of changing the planned ports to make the indicators green.
+6. Save the complete layout as `packet-tracer/checkpoints/HQ-Branches-NOC-Lab_v01_physical-topology.pkt`. Close and reopen that exact file; check device names, ports, and both EtherChannel candidate links.
+7. Record **B1** in [Validation](VALIDATION.md) with the checkpoint name and an actual Packet Tracer screenshot. Then begin VLAN/trunk configuration. Later checks follow configure → test → save → export; no separate planning approval round is required for routine configuration.

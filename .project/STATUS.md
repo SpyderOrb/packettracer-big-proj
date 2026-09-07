@@ -1,12 +1,12 @@
 # Working status
 
-Updated: **2026-09-05**. Current block: **1 — Build sheet and topology** (`in progress`).
+Updated: **2026-09-07**. Current block: **1 — Build sheet and topology** (`in progress`).
 
 ## Next action
 
-Open Packet Tracer, confirm the target models and ports, then assemble and save the first topology using [the build sheet](../docs/NETWORK.md#first-packet-tracer-checkpoint). Close and reopen `HQ-Branches-NOC-Lab_v01_physical-topology.pkt` and record B1. Proceed to configuration as soon as that passes.
+Build the HQ section first using [the assembly steps](../docs/NETWORK.md#first-packet-tracer-checkpoint): eight devices and eight links. Confirm actual models and ports, save `packet-tracer/HQ-Branches-NOC-Lab_working.pkt`, and reopen it. Provide `docs/evidence/working_hq_topology.png` for an interim layout review.
 
-For the first review, save a topology overview and readable port close-ups in `docs/evidence/`, then provide their paths and confirm whether v01 reopened. The [working routine](../README.md#working-with-codex) explains reading order, file locations, and the division between user-executed tests and Codex evidence review.
+Then add the remaining sites and simulated Internet, save and reopen the full 19-device/19-link `HQ-Branches-NOC-Lab_v01_physical-topology.pkt`, and record B1. The HQ-only review does not complete B1. The [working routine](../README.md#working-with-codex) explains reading order, file locations, and user-executed tests versus evidence review.
 
 The documentation restructure and address-plan review are complete. Topology assembly, a `.pkt` save/reopen, and runtime feature support checks remain pending. Those checks require direct interaction with Packet Tracer.
 
@@ -26,6 +26,7 @@ Use a short configure → test → save → export → record loop inside every 
 
 - [Build sheet](../docs/NETWORK.md), [planned diagram](../docs/topology.png), and [test checklist](../docs/VALIDATION.md): prepared.
 - Latest `.pkt` checkpoint / validated baseline: **none / none**.
+- Working `.pkt`: **none found in this project on 2026-09-07**; an existing file elsewhere can be supplied for review before starting a new build.
 - Device configuration exports / network test evidence: **none / none**.
 - Incident reports: **template only**. Planned faults: wrong access VLAN, OSPF adjacency failure, DHCP relay error, ACL blocking a required service.
 

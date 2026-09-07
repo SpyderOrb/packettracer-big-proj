@@ -62,4 +62,4 @@ After saving, tell Codex the checkpoint path, which devices changed, where the e
 
 This session has no direct Packet Tracer desktop control. Configuration review and screenshot review are possible; runtime checks must be executed in Packet Tracer and supplied as evidence. A screenshot of green links or a plausible configuration is not a full validation pass.
 
-**First handoff:** save and reopen v01, then provide a topology overview with names and readable port labels (or close-ups). Confirm that the file reopened successfully and report any device/port differences. Configuration exports are not required for this initial unconfigured topology.
+**First handoff:** follow the assembly steps for the eight-device HQ section, save and reopen `packet-tracer/HQ-Branches-NOC-Lab_working.pkt`, and provide `docs/evidence/working_hq_topology.png` with readable device names and ports. Report any model/port differences. Configuration exports are not required for this unconfigured layout. After adding the remaining devices, save the complete 19-device topology as v01 and perform B1.
