@@ -2,7 +2,7 @@
 
 **Status:** no configurations exported yet.
 
-Store one complete configuration per network device as `<hostname>.cfg`: HQ-R1, KAT-R1, RZE-R1, ISP-R1, HQ-SW1, HQ-SW2, KAT-SW1, RZE-SW1, and WAN-SW.
+Store one complete configuration per network device as `<hostname>.cfg`: HQ-L3, HQ-R1, KAT-R1, RZE-R1, ISP-R1, HQ-SW1, HQ-SW2, KAT-SW1, RZE-SW1, and WAN-SW (ten devices).
 
 ## Save and export a device
 

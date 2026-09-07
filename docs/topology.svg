@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="960" viewBox="0 0 1440 960" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1120" viewBox="0 0 1440 1120" role="img" aria-labelledby="title desc">
   <title id="title">HQ and branches: planned Packet Tracer topology</title>
-  <desc id="desc">Three site routers share Ethernet transit for OSPF area zero. Headquarters provides the only simulated Internet exit and has two switches joined by EtherChannel. Each branch has one switch. This is a design diagram, not evidence of a built or validated network.</desc>
+  <desc id="desc">Three site routers share Ethernet transit for OSPF area zero. Headquarters has a 3560 collapsed core with VLAN gateways, two separate LACP access bundles, and a routed link to its Internet edge router. Each branch has one switch. This is a design diagram, not evidence of a built or validated network.</desc>
   <defs>
     <style>
       text { font-family: "DejaVu Sans", sans-serif; fill: #182b42; }
@@ -18,13 +18,13 @@
       .edge { fill: none; stroke: #b17a36; stroke-width: 3; }
     </style>
   </defs>
-  <rect width="1440" height="960" fill="#f4f7fb"/>
+  <rect width="1440" height="1120" fill="#f4f7fb"/>
   <text x="44" y="51" class="title">HQ + Branches NOC Lab</text>
-  <text x="44" y="83" class="sub">Planned topology · Not yet built or validated · Packet Tracer 9.0.1 target</text>
+  <text x="44" y="83" class="sub">HQ Layer 3 design · 20 devices / 21 physical links · Runtime validation pending</text>
 
-  <rect x="40" y="420" width="440" height="455" rx="18" class="card"/>
-  <rect x="520" y="420" width="440" height="455" rx="18" class="card"/>
-  <rect x="1000" y="420" width="400" height="455" rx="18" class="card"/>
+  <rect x="40" y="420" width="440" height="610" rx="18" class="card"/>
+  <rect x="520" y="420" width="440" height="610" rx="18" class="card"/>
+  <rect x="1000" y="420" width="400" height="610" rx="18" class="card"/>
   <text x="65" y="455" class="site">Kraków · HQ</text>
   <text x="545" y="455" class="site">Katowice</text>
   <text x="1025" y="455" class="site">Rzeszów</text>
@@ -62,37 +62,50 @@
   <rect x="1112" y="485" width="176" height="58" rx="10" class="router"/>
   <text x="1200" y="521" text-anchor="middle" class="name">RZE-R1</text>
 
-  <path d="M257 543 V570 H160 V599" class="lan"/>
-  <path d="M740 543 V599 M1200 543 V599" class="lan"/>
-  <text x="275" y="569" class="tiny">802.1Q trunk</text>
-  <text x="756" y="574" class="tiny">802.1Q trunk</text>
-  <text x="1216" y="574" class="tiny">802.1Q trunk</text>
-  <rect x="80" y="599" width="160" height="58" rx="10" class="switch"/>
-  <text x="160" y="635" text-anchor="middle" class="name">HQ-SW1</text>
-  <rect x="295" y="599" width="160" height="58" rx="10" class="switch"/>
-  <text x="375" y="635" text-anchor="middle" class="name">HQ-SW2</text>
-  <path d="M240 616 H295 M240 640 H295" class="lan"/>
-  <text x="267" y="682" text-anchor="middle" class="tiny">Po1 · 2 × F0/23–24 · LACP</text>
-  <rect x="652" y="599" width="176" height="58" rx="10" class="switch"/>
-  <text x="740" y="635" text-anchor="middle" class="name">KAT-SW1</text>
-  <rect x="1112" y="599" width="176" height="58" rx="10" class="switch"/>
-  <text x="1200" y="635" text-anchor="middle" class="name">RZE-SW1</text>
+  <path d="M257 543 V620" class="wan"/>
+  <text x="275" y="573" class="tiny">Routed link · OSPF</text>
+  <text x="275" y="594" class="tiny">10.255.1.0/30</text>
+  <rect x="155" y="620" width="210" height="65" rx="10" class="switch"/>
+  <text x="260" y="648" text-anchor="middle" class="name">HQ-L3 · 3560</text>
+  <text x="260" y="671" text-anchor="middle" class="tiny">SVI gateways · STP root</text>
 
-  <text x="70" y="726" class="small">VLANs 10 / 20 / 30 / 40 / 50</text>
-  <text x="70" y="753" class="tiny">Management · IT · Users · Servers · Guest</text>
-  <text x="70" y="785" class="small">HQ-SRV1 · DHCP / DNS / HTTP</text>
-  <text x="70" y="812" class="tiny">HQ-PC1 / HQ-PC2 / IT-PC1 / HQ-GUEST1</text>
-  <text x="70" y="848" class="tiny">Site allocation: 10.10.0.0/16</text>
+  <path d="M195 685 V709 H148 V780 M207 685 V721 H160 V780" class="lan"/>
+  <path d="M305 685 V709 H375 V780 M317 685 V721 H387 V780" class="lan"/>
+  <text x="70" y="746" class="tiny">Po1 · LACP</text>
+  <text x="70" y="765" class="tiny">2 × FE</text>
+  <text x="280" y="746" class="tiny">Po2 · LACP</text>
+  <text x="280" y="765" class="tiny">2 × FE</text>
+  <rect x="80" y="780" width="160" height="58" rx="10" class="switch"/>
+  <text x="160" y="816" text-anchor="middle" class="name">HQ-SW1</text>
+  <rect x="295" y="780" width="160" height="58" rx="10" class="switch"/>
+  <text x="375" y="816" text-anchor="middle" class="name">HQ-SW2</text>
 
-  <text x="550" y="726" class="small">VLANs 10 / 30 / 50</text>
-  <text x="550" y="753" class="tiny">Management · Users · Guest</text>
-  <text x="550" y="797" class="small">KAT-PC1 / KAT-GUEST1</text>
-  <text x="550" y="848" class="tiny">Site allocation: 10.20.0.0/16</text>
+  <path d="M740 543 V780 M1200 543 V780" class="lan"/>
+  <text x="756" y="619" class="tiny">802.1Q trunk</text>
+  <text x="756" y="642" class="tiny">Router VLAN gateways</text>
+  <text x="1216" y="619" class="tiny">802.1Q trunk</text>
+  <text x="1040" y="682" class="tiny">Router VLAN gateways</text>
+  <rect x="652" y="780" width="176" height="58" rx="10" class="switch"/>
+  <text x="740" y="816" text-anchor="middle" class="name">KAT-SW1</text>
+  <rect x="1112" y="780" width="176" height="58" rx="10" class="switch"/>
+  <text x="1200" y="816" text-anchor="middle" class="name">RZE-SW1</text>
 
-  <text x="1030" y="726" class="small">VLANs 10 / 30 / 50</text>
-  <text x="1030" y="753" class="tiny">Management · Users · Guest</text>
-  <text x="1030" y="797" class="small">RZE-PC1 / RZE-GUEST1</text>
-  <text x="1030" y="848" class="tiny">Site allocation: 10.30.0.0/16</text>
+  <text x="70" y="877" class="small">VLANs 10 / 20 / 30 / 40 / 50</text>
+  <text x="70" y="904" class="tiny">Management · IT · Users · Servers · Guest</text>
+  <text x="70" y="942" class="small">HQ-SRV1 · DHCP / DNS / HTTP</text>
+  <text x="70" y="969" class="tiny">HQ-PC1 / HQ-PC2 / IT-PC1 / HQ-GUEST1</text>
+  <text x="70" y="1005" class="tiny">Site allocation: 10.10.0.0/16</text>
 
-  <text x="44" y="918" class="sub">All VLAN gateways are on site routers. See NETWORK.md for exact masks, ports, pools, and access policy.</text>
+  <text x="550" y="877" class="small">VLANs 10 / 30 / 50</text>
+  <text x="550" y="904" class="tiny">Management · Users · Guest</text>
+  <text x="550" y="954" class="small">KAT-PC1 / KAT-GUEST1</text>
+  <text x="550" y="1005" class="tiny">Site allocation: 10.20.0.0/16</text>
+
+  <text x="1030" y="877" class="small">VLANs 10 / 30 / 50</text>
+  <text x="1030" y="904" class="tiny">Management · Users · Guest</text>
+  <text x="1030" y="954" class="small">RZE-PC1 / RZE-GUEST1</text>
+  <text x="1030" y="1005" class="tiny">Site allocation: 10.30.0.0/16</text>
+
+  <text x="44" y="1072" class="sub">HQ: collapsed core + Layer 2 access. Branches: router-on-a-stick. HQ-L3 is a single point of failure.</text>
+  <text x="44" y="1098" class="tiny">Endpoint groups are summarized. NETWORK.md lists every physical cable, subnet, gateway and service.</text>
 </svg>

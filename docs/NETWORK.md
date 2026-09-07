@@ -1,14 +1,16 @@
 # Network build sheet
 
-**State:** working design, not implemented or tested. This is the active source for topology, addressing, and traffic intent. Target device models and port labels require confirmation in Packet Tracer 9.0.1 before configuration.
+**State:** accepted HQ Layer 3 revision; assembly and runtime validation pending. This is the active source for topology, addressing, and traffic intent. HQ-L3 model, ports, and command support require confirmation in Packet Tracer 9.0.1; earlier access-layout screenshots do not validate this revision.
 
 ## Design in brief
 
 Kraków HQ supports 44 staff and hosts IT and shared services; Katowice supports 16 staff and Rzeszów 12. Use representative PCs instead of modelling every employee. Segment by trust and function: Management, IT, Users, Servers, and Guest at HQ; Management, Users, and Guest at each branch.
 
-Each site router provides VLAN gateways through one 802.1Q trunk (router-on-a-stick). Three routers share an Ethernet transit subnet for OSPF area 0. `WAN-SW` represents the lab transit medium, not a managed corporate access switch or a real carrier/VPN. HQ provides the sole Internet exit. This avoids WAN modules and keeps the build uniform.
+HQ uses a two-tier collapsed core: `HQ-L3` combines distribution/core functions and supplies VLAN gateways through switch virtual interfaces (SVIs). `HQ-SW1` and `HQ-SW2` provide Layer 2 access. `HQ-R1` connects to HQ-L3 over a routed Ethernet link and handles WAN routing and NAT/PAT. At each branch, the router still provides VLAN gateways through one 802.1Q trunk (router-on-a-stick). [Cisco campus design guide](https://www.cisco.com/c/en/us/td/docs/solutions/CVD/Campus/cisco-campus-lan-wlan-design-guide.html)
 
-Two HQ switches use one two-member LACP EtherChannel. Make `HQ-SW1` the STP root and `HQ-SW2` secondary for HQ VLANs. Test loss of one member link; do not claim switch, router, or WAN failover. DHCP snooping, DAI, and further Layer 2 protections are optional follow-ups after the core baseline and simulator support checks.
+The three site routers retain their shared Ethernet transit for OSPF area 0. `WAN-SW` is an abstraction of Layer 2 transport between sites; only router transit ports share VLAN 900. Corporate client VLANs remain local to each site. No provider core, MPLS, VPN, or WAN redundancy is implemented. HQ-R1 remains the sole simulated Internet exit.
+
+Each HQ access switch has its own two-member LACP trunk to HQ-L3: Po1 serves HQ-SW1 and Po2 serves HQ-SW2. There is no direct HQ-SW1–HQ-SW2 cable. Make HQ-L3 the STP root and HQ-SW1 secondary for HQ VLANs. Test loss of one member in each bundle. One HQ-L3 is a single point of failure; a secondary STP root does not provide a backup VLAN gateway. The FastEthernet bundles are chosen for simulator practice, with no throughput claim. Additional Layer 2 protections remain optional after the core baseline.
 
 ![Planned topology, not validation evidence](topology.png)
 
@@ -16,22 +18,26 @@ Two HQ switches use one two-member LACP EtherChannel. Make `HQ-SW1` the STP root
 
 | Names | Target model | Role |
 |---|---|---|
-| `HQ-R1`, `KAT-R1`, `RZE-R1` | 2911 | Site gateways and OSPF; HQ also runs NAT/PAT |
+| `HQ-L3` | 3560-24PS | HQ collapsed core, SVI gateways, DHCP relay, inter-VLAN ACLs and OSPF |
+| `HQ-R1` | 2911 | HQ WAN/Internet edge, OSPF and NAT/PAT |
+| `KAT-R1`, `RZE-R1` | 2911 | Branch VLAN gateways, DHCP relay, ACLs and OSPF |
 | `ISP-R1` | 2911 | Simulated ISP, outside corporate OSPF |
 | `HQ-SW1`, `HQ-SW2`, `KAT-SW1`, `RZE-SW1` | 2960-24TT | Corporate Layer 2 access switches |
 | `WAN-SW` | 2960-24TT | Shared transit, access VLAN 900, no management IP |
 | `HQ-SRV1`, `EXT-SRV1` | Server-PT | Internal DHCP/DNS/HTTP; external DNS/HTTP respectively |
 | `HQ-PC1`, `HQ-PC2`, `IT-PC1`, `HQ-GUEST1`, `KAT-PC1`, `KAT-GUEST1`, `RZE-PC1`, `RZE-GUEST1` | PC-PT | Eight representative clients |
 
-Total: **19 devices**. Cisco documents three onboard GE ports on the physical 2911; this supports the model choice but does not verify Packet Tracer behavior. [Cisco hardware guide](https://www.cisco.com/c/en/us/td/docs/routers/access/2900/hardware/installation/guide/Hardware_Installation_Guide/Overview.html)
+Total: **20 devices and 21 physical links**. Logical port-channels do not add physical links. Packet Tracer lists 3560-24PS as a multilayer switch; check `G0/1`, `F0/1–4`, IP routing, SVIs, OSPF, relay, ACL and LACP commands on the installed model before configuration. This documentation check is not a simulator test. [Packet Tracer switch guide](https://tutorials.ptnetacad.net/help/default/config_switches.htm)
 
 | Device / port | Peer / port | Cable | Intended use |
 |---|---|---|---|
-| HQ-R1 G0/0 | HQ-SW1 G0/1 | Copper Straight-Through | HQ VLAN trunk |
+| HQ-R1 G0/0 | HQ-L3 G0/1 | Copper Straight-Through | Routed /30 link; no VLAN trunk |
 | KAT-R1 G0/0 | KAT-SW1 G0/1 | Copper Straight-Through | Katowice VLAN trunk |
 | RZE-R1 G0/0 | RZE-SW1 G0/1 | Copper Straight-Through | Rzeszów VLAN trunk |
-| HQ-SW1 F0/23 | HQ-SW2 F0/23 | Copper Cross-Over | Port-channel 1 member |
-| HQ-SW1 F0/24 | HQ-SW2 F0/24 | Copper Cross-Over | Port-channel 1 member |
+| HQ-L3 F0/1 | HQ-SW1 F0/23 | Copper Cross-Over | Po1 member 1 |
+| HQ-L3 F0/2 | HQ-SW1 F0/24 | Copper Cross-Over | Po1 member 2 |
+| HQ-L3 F0/3 | HQ-SW2 F0/23 | Copper Cross-Over | Po2 member 1 |
+| HQ-L3 F0/4 | HQ-SW2 F0/24 | Copper Cross-Over | Po2 member 2 |
 | HQ-R1 G0/1 | WAN-SW F0/1 | Copper Straight-Through | OSPF transit, access VLAN 900 |
 | KAT-R1 G0/1 | WAN-SW F0/2 | Copper Straight-Through | OSPF transit, access VLAN 900 |
 | RZE-R1 G0/1 | WAN-SW F0/3 | Copper Straight-Through | OSPF transit, access VLAN 900 |
@@ -54,11 +60,11 @@ Select the cable type manually under Connections, then choose the exact ports in
 
 ## VLANs and addressing
 
-VLAN IDs repeat across sites; their IP subnets do not. Corporate site prefixes are `10.10.0.0/16` (HQ), `10.20.0.0/16` (KAT), and `10.30.0.0/16` (RZE). These are allocation containers, not interface masks or required OSPF summaries. VLAN gateway `.1` resides on router subinterface `G0/0.<VLAN>`.
+VLAN IDs repeat across sites; their IP subnets do not. Corporate site prefixes are `10.10.0.0/16` (HQ), `10.20.0.0/16` (KAT), and `10.30.0.0/16` (RZE). These are allocation containers, not interface masks or required OSPF summaries. HQ gateway `.1` resides on `HQ-L3 interface Vlan<VLAN>`; branch gateway `.1` resides on router subinterface `G0/0.<VLAN>`. Client addresses, masks, gateway addresses and DHCP pools remain unchanged by the HQ revision.
 
 | Site | VLAN / name | Subnet | Gateway | Assignment |
 |---|---|---|---|---|
-| HQ | 10 MGMT | 10.10.10.0/28 | 10.10.10.1 | SW1 .2; SW2 .3, static management SVIs |
+| HQ | 10 MGMT | 10.10.10.0/28 | 10.10.10.1 | HQ-L3 .1; SW1 .2; SW2 .3, static SVIs |
 | HQ | 20 IT | 10.10.20.0/28 | 10.10.20.1 | IT-PC1 .10, static |
 | HQ | 30 USERS | 10.10.30.0/26 | 10.10.30.1 | DHCP .10–.62: 53 leases |
 | HQ | 40 SERVERS | 10.10.40.0/28 | 10.10.40.1 | HQ-SRV1 .10, static |
@@ -70,11 +76,12 @@ VLAN IDs repeat across sites; their IP subnets do not. Corporate site prefixes a
 | RZE | 30 USERS | 10.30.30.0/27 | 10.30.30.1 | DHCP .10–.30: 21 leases |
 | RZE | 50 GUEST | 10.30.50.0/28 | 10.30.50.1 | DHCP .2–.14: 13 leases |
 
-Use VLAN 999 as an unused native/parking VLAN with no IP interface or clients. HQ trunks allow 10,20,30,40,50,999; branch trunks allow 10,30,50,999. Match native VLAN 999 at both ends, including router trunks. Shut unused access ports. Management means device administration, not company leadership.
+Use VLAN 999 as an unused native/parking VLAN with no IP interface or clients. HQ Po1 and Po2 allow 10,20,30,40,50,999; branch trunks allow 10,30,50,999. Match native VLAN 999 at both ends, including branch router trunks. Configure LACP `mode active` and consistent trunk settings on each bundle and its members; use group 1 at both Po1 ends and group 2 at both Po2 ends. Check the 3560 trunk-encapsulation syntax with CLI help before forcing trunk mode. Shut unused access ports, including the now-unused HQ-SW1 G0/1. Management means device administration, not company leadership.
 
 | Network | Subnet | Addresses |
 |---|---|---|
 | Shared OSPF transit | 10.255.0.0/29 | HQ G0/1 .1; KAT G0/1 .2; RZE G0/1 .3 |
+| HQ core–edge | 10.255.1.0/30 | HQ-R1 G0/0 .1; HQ-L3 G0/1 .2 |
 | HQ–ISP | 198.51.100.0/30 | ISP G0/0 .1; HQ G0/2 .2 |
 | External services | 203.0.113.0/24 | ISP G0/1 .1; EXT-SRV1 .10, gateway .1 |
 
@@ -82,16 +89,25 @@ The two external ranges are documentation addresses used only inside the simulat
 
 ## Routing and services
 
-- OSPF process 1, area 0; explicit router IDs `10.255.255.1` (HQ), `.2` (KAT), `.3` (RZE). These are identifiers, not assigned interface addresses. Advertise the listed corporate VLAN networks and transit subnet. Make all interfaces passive except G0/1. Keep ISP and external networks outside corporate OSPF.
-- HQ has a default route via `198.51.100.1` and originates that default into OSPF while it exists. Branch Internet traffic then exits HQ. The shared transit permits direct branch-to-branch routing; access policy still applies at each site.
-- HQ PAT overloads G0/2. G0/1 and the routed HQ client VLAN interfaces are inside-facing. A NAT source list selects addresses for translation; it does not replace traffic-filtering ACLs. Do not publish internal services with static translations.
-- HQ-SRV1 supplies six DHCP pools from the table: three Users and three Guest pools. Configure pool start, mask, gateway, DNS, and lease count. Relay those six VLANs to `10.10.40.10`; Management, IT, and Servers use static addresses.
+- Enable `ip routing` on HQ-L3. Its G0/1 is a routed port (`no switchport`), addressed `10.255.1.2/30`; HQ-R1 G0/0 is `10.255.1.1/30`, with no VLAN subinterfaces. HQ-L3 supplies SVIs 10,20,30,40,50. An SVI needs its VLAN and an active forwarding member/trunk to become operational. [Cisco 3560 routing guide](https://www.cisco.com/c/en/us/td/docs/switches/lan/catalyst3560/software/release/15-0_1_se/configuration/guide/scg3560/swiprout.html)
+- OSPF process 1, area 0 runs on four devices. Router IDs are `10.255.255.1` (HQ-R1), `.2` (KAT-R1), `.3` (RZE-R1), and `.4` (HQ-L3); these are identifiers, not assigned interface addresses. HQ-L3 advertises HQ VLAN networks and the core–edge /30; HQ-R1 advertises the /30 and shared /29; each branch advertises its local VLANs and the /29. Use passive interfaces by default, with only the adjacencies listed below enabled. Keep ISP-R1 and the external networks outside corporate OSPF.
+- Use OSPF point-to-point network type on both ends of the HQ core–edge /30 after confirming command support. The shared /29 retains broadcast network type and DR/BDR election.
+- HQ-R1 has a default route via `198.51.100.1` and originates that default into OSPF while it exists. HQ-L3 and both branches learn it. HQ-R1 must learn all HQ VLAN routes back through HQ-L3. The shared transit still permits direct branch-to-branch routing; access policy applies at each site's routing boundary.
+- HQ-R1 PAT overloads G0/2 (outside); G0/0 toward HQ-L3 and G0/1 toward WAN-SW are inside. HQ-L3 performs no NAT. A NAT source list selects corporate client source prefixes for translation; it does not replace traffic-filtering ACLs. Do not publish internal services with static translations.
+- HQ-SRV1 supplies the same six DHCP pools: three Users and three Guest pools. Relay to `10.10.40.10` from HQ-L3 SVIs 30/50 and from branch router subinterfaces G0/0.30/G0/0.50. HQ-R1 has no client DHCP relay role. Management, IT, and Servers remain static.
 - Corporate clients use DNS `10.10.40.10`. Guests use external DNS `203.0.113.10`. Internal DNS has `intranet.lab.example → 10.10.40.10` and `www.lab.example → 203.0.113.10`; external DNS has only the latter. Serve HTTP on both servers. Use the same corporate DNS for IT-PC1.
-- Manage corporate routers through their VLAN 10 address and corporate switches through their management SVI; allow SSH from HQ IT only. ISP-R1 and WAN-SW are simulation infrastructure with no corporate remote-management requirement.
+- Manage HQ-L3 at `10.10.10.1`, HQ-SW1/SW2 at `.2`/`.3`, and HQ-R1 at `10.255.1.1`. Branch router/switch management stays at `10.20.10.1/.2` and `10.30.10.1/.2`. Apply TP-04 and TP-09 to all eight management targets, explicitly including HQ-R1's transit address. Restrict corporate device SSH to HQ IT. ISP-R1 and WAN-SW remain simulation infrastructure without corporate remote-management requirements.
+
+| OSPF device | Non-passive interfaces | Expected FULL neighbors |
+|---|---|---|
+| HQ-L3 | G0/1 | HQ-R1 (1) |
+| HQ-R1 | G0/0, G0/1 | HQ-L3, KAT-R1, RZE-R1 (3) |
+| KAT-R1 | G0/1 | HQ-R1, RZE-R1 (2) |
+| RZE-R1 | G0/1 | HQ-R1, KAT-R1 (2) |
 
 ## Traffic policy
 
-The existing TP identifiers are retained. Entries are requirements, not successful tests. Use DNS (UDP/TCP 53), HTTP (TCP 80), SSH (TCP 22), and ICMP as specified; confirm simulator behavior before writing final ACLs.
+The existing TP identifiers are retained. Entries are requirements, not successful tests. Use DNS (UDP/TCP 53), HTTP (TCP 80), SSH (TCP 22), and ICMP as specified; confirm simulator behavior before writing final ACLs. Enforce HQ inter-VLAN policy on HQ-L3 SVIs and branch policy on branch router subinterfaces; apply Internet-edge filtering on HQ-R1. In particular, HQ Users-to-Servers traffic is routed entirely on HQ-L3, so an ACL on HQ-R1 cannot enforce TP-01.
 
 | Rule | Source → destination | Required behavior |
 |---|---|---|
@@ -113,10 +129,10 @@ Permit the specific DHCP relay exchanges, OSPF control traffic, and replies need
 
 ## First Packet Tracer checkpoint
 
-1. Open Cisco Packet Tracer 9.0.1. Confirm 2911 and 2960-24TT availability and the port labels above; record differences here before using a substitute.
-2. Start with **HQ only: eight devices** — HQ-R1, HQ-SW1, HQ-SW2, HQ-SRV1, HQ-PC1, HQ-PC2, IT-PC1, and HQ-GUEST1. Set these display names and cable the eight HQ-only links from the tables. Display names identify devices on the canvas; IOS hostnames will be configured in Block 2.
-3. Save this partial build as `packet-tracer/HQ-Branches-NOC-Lab_working.pkt`, reopen it, and capture `docs/evidence/working_hq_topology.png` with readable names and ports. This is an interim layout review, not a completed B1 test. Use a new working filename if a previous working copy needs preserving.
-4. Add the two branches, WAN-SW, ISP-R1, and EXT-SRV1 using the same tables. The complete layout must have **19 devices and 19 links**, grouped as HQ, Katowice, Rzeszów, Transit, and Simulated Internet. Use English labels.
-5. In a fresh unconfigured topology, router ports may be administratively down and one parallel switch link may be STP-blocked; this is not yet a connectivity test. Record unexpected observations instead of changing the planned ports to make the indicators green.
-6. Save the complete layout as `packet-tracer/checkpoints/HQ-Branches-NOC-Lab_v01_physical-topology.pkt`. Close and reopen that exact file; check device names, ports, and both EtherChannel candidate links.
-7. Record **B1** in [Validation](VALIDATION.md) with the checkpoint name and an actual Packet Tracer screenshot. Then begin VLAN/trunk configuration. For each subsequent milestone, configure, test, save a new checkpoint, and export the matching device configurations.
+1. Save any current Packet Tracer session, then use **Save As** to create `packet-tracer/HQ-Branches-NOC-Lab_working_l3.pkt`. Preserve the earlier working file. Confirm 2911, 2960-24TT and 3560-24PS availability and exact port labels before substituting models.
+2. For an existing HQ layout, add **3560-24PS** as `HQ-L3`. Remove the old HQ-R1 G0/0–HQ-SW1 G0/1 cable and both direct HQ-SW1–HQ-SW2 cables. Build the five HQ infrastructure links in the table: one routed-link candidate to HQ-R1 and two pairs to the access switches. Keep the five endpoint cables. HQ now has **nine devices and ten links**; no direct access-switch link remains.
+3. Before configuring services, record `show version` and `show ip interface brief` on HQ-L3, plus a readable screenshot. Confirm the routing, SVI, routed-port, OSPF, relay, ACL and LACP command support in CLI help; parser support alone is not a successful feature test. Save the working file, reopen it, and retain `docs/evidence/working_hq_l3_topology.png` for an interim review. Use a new evidence name for later captures.
+4. Complete the branches, WAN-SW, ISP-R1 and EXT-SRV1 from the tables. The full layout has **20 devices and 21 links**, grouped as HQ, Katowice, Rzeszów, Transit and Simulated Internet. Existing branch and external links do not change. Display names identify devices on the canvas; configure IOS hostnames in Block 2.
+5. Before LACP configuration, STP may block one link in each HQ pair. Router interfaces may be administratively down. Record observations and any `no shutdown` changes; green indicators do not validate routing or EtherChannel.
+6. Save startup configurations on changed devices, then save the full layout as `packet-tracer/checkpoints/HQ-Branches-NOC-Lab_v01_physical-topology.pkt`. If v01 already exists, preserve it and use the next unused number with an HQ-L3 description. Close and reopen the exact new file; check all devices, ports and four LACP candidate links.
+7. Record **B1** in [Validation](VALIDATION.md) with the checkpoint name and actual screenshots. Then configure HQ VLANs/SVIs, both LACP trunks and the routed core–edge link; retain router-on-a-stick at the branches. For each subsequent milestone, configure, test, save a new checkpoint, and export the matching device configurations.
