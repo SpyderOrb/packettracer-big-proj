@@ -6,11 +6,9 @@
 .DS_Store
 Thumbs.db
 
-# Local agent state and historical machine-specific notes
-/.agents/
-/.codex/
-/.project/archive/
-/.project/local/
+# Unreviewed working copies; publish numbered checkpoints and selected evidence
+/packet-tracer/*_working*.pkt
+/docs/evidence/working_*
 
 # Credentials and private key material
 .env

@@ -43,7 +43,7 @@ Append short entries here as checks are executed; keep raw output and screenshot
 
 For screenshots, keep device names, relevant port labels, or the command and its full result readable. Use one overview plus close-ups when the whole topology is too dense. For text output, include the device prompt, command, and complete response. Failed checks and CLI errors are useful evidence: preserve them before making a correction, then capture the new result under a different filename.
 
-If the user runs a check and Codex reviews its output, record that execution source. Do not describe an evidence review as Codex opening or operating the `.pkt`. Keep the checkpoint filename consistent across the report, configuration exports, and screenshots.
+Record who executed each check and how its result was reviewed. Distinguish direct Packet Tracer testing from inspection of saved output. Keep the checkpoint filename consistent across the report, configuration exports, and screenshots.
 
 ```text
 Test ID / date / Packet Tracer version:
