@@ -1,6 +1,6 @@
 # Network build sheet
 
-**State:** accepted HQ Layer 3 revision; assembly and runtime validation pending. This is the active source for topology, addressing, and traffic intent. HQ-L3 model, ports, and command support require confirmation in Packet Tracer 9.0.1; earlier access-layout screenshots do not validate this revision.
+**State:** HQ Layer 3 design accepted; site assembly screenshots and HQ-L3 inventory/CDP output reviewed. Complete-topology save/reopen and routing/service validation remain pending. This is the active source for topology, addressing, and traffic intent; recorded observations are in [Validation](VALIDATION.md#2026-09-07--site-layout-and-hq-l3-inventory-review).
 
 ## Design in brief
 
@@ -27,7 +27,7 @@ Each HQ access switch has its own two-member LACP trunk to HQ-L3: Po1 serves HQ-
 | `HQ-SRV1`, `EXT-SRV1` | Server-PT | Internal DHCP/DNS/HTTP; external DNS/HTTP respectively |
 | `HQ-PC1`, `HQ-PC2`, `IT-PC1`, `HQ-GUEST1`, `KAT-PC1`, `KAT-GUEST1`, `RZE-PC1`, `RZE-GUEST1` | PC-PT | Eight representative clients |
 
-Total: **20 devices and 21 physical links**. Logical port-channels do not add physical links. Packet Tracer lists 3560-24PS as a multilayer switch; check `G0/1`, `F0/1–4`, IP routing, SVIs, OSPF, relay, ACL and LACP commands on the installed model before configuration. This documentation check is not a simulator test. [Packet Tracer switch guide](https://tutorials.ptnetacad.net/help/default/config_switches.htm)
+Target: **20 devices and 21 physical links**. Logical port-channels do not add physical links. Supplied HQ-L3 output identifies `WS-C3560-24PS`, simulated IOS `12.2(37)SE1`, and physical ports F0/1–24 and G0/1–2. The five used local ports and corresponding CDP remote port numbers match the table below; repeated default neighbor names do not uniquely identify HQ-SW1 versus HQ-SW2. IP routing, SVIs, OSPF, relay, ACL and LACP behavior still require checks on the installed model. [Packet Tracer switch guide](https://tutorials.ptnetacad.net/help/default/config_switches.htm)
 
 | Device / port | Peer / port | Cable | Intended use |
 |---|---|---|---|

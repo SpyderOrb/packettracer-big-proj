@@ -1,12 +1,12 @@
 # Validation
 
-**Network results: not run.** The build-sheet review is not Packet Tracer evidence. Each result below must identify the actual tested checkpoint, expected behavior, observed behavior, and supporting evidence.
+**Status:** partial layout and HQ-L3 inventory checks recorded; end-to-end network validation pending. Each result must distinguish expected behavior from observed output and identify its checkpoint or working-file context.
 
 ## Checks during the build
 
 | ID | Check and method | Expected result | Actual / evidence |
 |---|---|---|---|
-| B1 | Save/reopen the first complete HQ-L3 checkpoint; inspect devices, ports and model support | 20 named devices, 21 physical links; HQ-L3 is 3560-24PS; four LACP candidate links and no direct HQ-SW1–HQ-SW2 link; exact model/port differences recorded | Not run / — |
+| B1 | Save/reopen the first complete HQ-L3 checkpoint; inspect devices, ports and model support | 20 named devices, 21 physical links; HQ-L3 is 3560-24PS; four LACP candidate links and no direct HQ-SW1–HQ-SW2 link; exact model/port differences recorded | Partial — site screenshots and HQ-L3 output reviewed; full checkpoint/reopen pending; see dated review below |
 | B2 | `show vlan brief`, `show interfaces trunk`, `show ip interface brief`, `show ip route`; gateway and core–edge tests | HQ gateways on HQ-L3 SVIs; branch gateways on router subinterfaces; correct allowed/native VLANs; HQ-L3 G0/1 and HQ-R1 G0/0 use the /30 as routed interfaces, not a trunk | Not run / — |
 | B3 | `show spanning-tree`, `show etherchannel summary`; independently disable/restore one Po1 member and one Po2 member | HQ-L3 root; two bundled members per channel; HQ-PC1 → 10.10.30.1 survives Po1 member loss, HQ-PC2 → 10.10.30.1 survives Po2 member loss; both bundles fully restored | Not run / — |
 | B4 | SSH from IT-PC1 to every corporate management IP | Successful SSH after routed reachability exists; Telnet disabled | Not run / — |
@@ -19,7 +19,7 @@
 
 Run relevant checks immediately after each configuration slice. B4 needs routed connectivity for branch management and is completed when that path exists. B5 may have a transient DR election period; record the settled neighbor state. Command support must be checked on the actual model; record a supported alternative if needed.
 
-The revised HQ-only layout has nine devices and ten links. Interim screenshots of the earlier access layout do not validate the HQ-L3 revision. B1 remains not run until the complete 20-device/21-link checkpoint is checked and reopened; preserve an existing checkpoint and use the next unused number when necessary.
+The revised HQ-only layout has nine devices and ten links. The supplied site views show 17 devices and 16 links across separate captures; they do not establish the full WAN/external layout or a single saved state. B1 remains incomplete until the complete 20-device/21-link checkpoint is checked and reopened; preserve an existing checkpoint and use the next unused number when necessary.
 
 On HQ-L3, capture version/port information and confirm CLI support for `ip routing`, `interface vlan`, `no switchport`, `router ospf`, `ip ospf network point-to-point`, `ip helper-address`, ACLs and LACP before configuration. Use CLI help to check trunk-encapsulation syntax. Command acceptance is only a support check; B2–B9 establish behavior. For B3, capture baseline, single-member failure and recovery separately for each bundle; this tests member-link resilience, not core-switch or gateway failover.
 
@@ -44,6 +44,21 @@ For HQ inter-VLAN cases, collect the relevant SVI ACL evidence on HQ-L3; HQ User
 ## Recording results
 
 Append short entries here as checks are executed; keep raw output and screenshots in `docs/evidence/`. Use filenames such as `v02_B3_etherchannel.txt`. Include the policy ID in the filename for a policy test. Capture test endpoint addresses at execution time because DHCP leases may change.
+
+### 2026-09-07 — Site layout and HQ-L3 inventory review
+
+- **Execution/review:** lab author ran the commands and supplied screenshots; review covered the visible output and site layouts. Screenshots are preserved without image edits. The version output is cropped; only visible fields are recorded.
+- **Working-file context:** `HQ-Branches-NOC-Lab_working_l3.pkt`, 103,965 bytes; SHA-256 `a89ce62431e0037881da161946f9b85070e7a7d266cda6c216a3a9ee9fcfe869`. Saving was reported and file presence/hash checked. The file was not opened during review; screenshot-to-file consistency and reopen persistence remain unverified. This is not a published or validated checkpoint.
+
+| Check | Expected | Observed | Evidence |
+|---|---|---|---|
+| HQ layout | Nine devices, ten cables; separate HQ-L3 access pairs | Named devices and visible cabling match the HQ design; amber indicators remain on one link in each pair | [HQ](evidence/2026-09-07_hq_topology.png) |
+| Branch layouts | Four devices and three cables per branch | Models, names and visible router/switch port labels match; router-to-switch indicators are now green in both views | [Katowice](evidence/2026-09-07_kat_topology.png), [Rzeszow](evidence/2026-09-07_rze_topology.png) |
+| HQ-L3 inventory | 3560-24PS with the required physical ports | Visible model WS-C3560-24PS; C3560-ADVIPSERVICESK9-M, IOS 12.2(37)SE1; F0/1–24 and G0/1–2 listed | [Version](evidence/2026-09-07_hq_l3_version.png), [Interfaces](evidence/2026-09-07_hq_l3_interfaces.png) |
+| Used HQ-L3 interfaces | F0/1–4 and G0/1 operational | These five ports show up/up; addresses unassigned. Other physical ports show down/down; Vlan1 is administratively down/down | [Interfaces](evidence/2026-09-07_hq_l3_interfaces.png) |
+| HQ-L3 CDP port pairs | G0/1 → router G0/0; F0/1–4 → switch F0/23, F0/24, F0/23, F0/24 | All five local/remote port-number pairs match; router platform C2900 and switch platform 2960. Neighbor IDs are still Router/Switch, so switch identities require hostname confirmation | [CDP](evidence/2026-09-07_hq_l3_cdp.png) |
+
+**Result:** partial B1 evidence only. VLAN gateways, LACP operation, routing, DHCP, NAT, ACLs, full-topology completeness and save/reopen persistence have not passed validation. Set unique IOS hostnames during configuration and recapture CDP before accepting named peer identities.
 
 For screenshots, keep device names, relevant port labels, or the command and its full result readable. Use one overview plus close-ups when the whole topology is too dense. For text output, include the device prompt, command, and complete response. Failed checks and CLI errors are useful evidence: preserve them before making a correction, then capture the new result under a different filename.
 
