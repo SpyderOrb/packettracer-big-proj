@@ -1,13 +1,13 @@
 # Validation
 
-**Status:** partial layout and HQ-L3 inventory checks recorded; end-to-end network validation pending. Each result must distinguish expected behavior from observed output and identify its checkpoint or working-file context.
+**Status:** complete layout screenshot, HQ-L3 inventory and VLAN creation on all three HQ switches recorded; checkpoint persistence and end-to-end network validation pending. Each result must distinguish expected behavior from observed output and identify its checkpoint or working-file context.
 
 ## Checks during the build
 
 | ID | Check and method | Expected result | Actual / evidence |
 |---|---|---|---|
-| B1 | Save/reopen the first complete HQ-L3 checkpoint; inspect devices, ports and model support | 20 named devices, 21 physical links; HQ-L3 is 3560-24PS; four LACP candidate links and no direct HQ-SW1–HQ-SW2 link; exact model/port differences recorded | Partial — site screenshots and HQ-L3 output reviewed; full checkpoint/reopen pending; see dated review below |
-| B2 | `show vlan brief`, `show interfaces trunk`, `show ip interface brief`, `show ip route`; gateway and core–edge tests | HQ gateways on HQ-L3 SVIs; branch gateways on router subinterfaces; correct allowed/native VLANs; HQ-L3 G0/1 and HQ-R1 G0/0 use the /30 as routed interfaces, not a trunk | Not run / — |
+| B1 | Save/reopen the first complete HQ-L3 checkpoint; inspect devices, ports and model support | 20 named devices, 21 physical links; HQ-L3 is 3560-24PS; four LACP candidate links and no direct HQ-SW1–HQ-SW2 link; exact model/port differences recorded | Partial — full 20-device/21-link screenshot and HQ-L3 output reviewed; checkpoint/reopen and remaining support checks pending; see dated reviews below |
+| B2 | `show vlan brief`, `show interfaces trunk`, `show ip interface brief`, `show ip route`; gateway and core–edge tests | HQ gateways on HQ-L3 SVIs; branch gateways on router subinterfaces; correct allowed/native VLANs; HQ-L3 G0/1 and HQ-R1 G0/0 use the /30 as routed interfaces, not a trunk | Partial — VLAN IDs/names observed on HQ-L3, HQ-SW1 and HQ-SW2; trunks, SVIs and routed-link tests pending; see dated VLAN reviews below |
 | B3 | `show spanning-tree`, `show etherchannel summary`; independently disable/restore one Po1 member and one Po2 member | HQ-L3 root; two bundled members per channel; HQ-PC1 → 10.10.30.1 survives Po1 member loss, HQ-PC2 → 10.10.30.1 survives Po2 member loss; both bundles fully restored | Not run / — |
 | B4 | SSH from IT-PC1 to every corporate management IP | Successful SSH after routed reachability exists; Telnet disabled | Not run / — |
 | B5 | `show ip ospf neighbor`, `show ip ospf interface`, `show ip route`; test HQ/branch paths | HQ-R1 has 3 FULL neighbors, HQ-L3 has 1, each branch has 2; /29 broadcast and /30 point-to-point types match design; HQ-R1 learns HQ VLAN routes through HQ-L3; HQ-L3 and branches learn the HQ-R1-originated default | Not run / — |
@@ -19,7 +19,7 @@
 
 Run relevant checks immediately after each configuration slice. B4 needs routed connectivity for branch management and is completed when that path exists. B5 may have a transient DR election period; record the settled neighbor state. Command support must be checked on the actual model; record a supported alternative if needed.
 
-The revised HQ-only layout has nine devices and ten links. The supplied site views show 17 devices and 16 links across separate captures; they do not establish the full WAN/external layout or a single saved state. B1 remains incomplete until the complete 20-device/21-link checkpoint is checked and reopened; preserve an existing checkpoint and use the next unused number when necessary.
+The 2026-09-08 full overview shows all 20 devices and 21 physical links, including the WAN and simulated Internet. Earlier separate site views cover 17 devices and 16 links. B1 remains incomplete until a matching checkpoint is checked and reopened; preserve an existing checkpoint and use the next unused number when necessary.
 
 On HQ-L3, capture version/port information and confirm CLI support for `ip routing`, `interface vlan`, `no switchport`, `router ospf`, `ip ospf network point-to-point`, `ip helper-address`, ACLs and LACP before configuration. Use CLI help to check trunk-encapsulation syntax. Command acceptance is only a support check; B2–B9 establish behavior. For B3, capture baseline, single-member failure and recovery separately for each bundle; this tests member-link resilience, not core-switch or gateway failover.
 
@@ -59,6 +59,30 @@ Append short entries here as checks are executed; keep raw output and screenshot
 | HQ-L3 CDP port pairs | G0/1 → router G0/0; F0/1–4 → switch F0/23, F0/24, F0/23, F0/24 | All five local/remote port-number pairs match; router platform C2900 and switch platform 2960. Neighbor IDs are still Router/Switch, so switch identities require hostname confirmation | [CDP](evidence/2026-09-07_hq_l3_cdp.png) |
 
 **Result:** partial B1 evidence only. VLAN gateways, LACP operation, routing, DHCP, NAT, ACLs, full-topology completeness and save/reopen persistence have not passed validation. Set unique IOS hostnames during configuration and recapture CDP before accepting named peer identities.
+
+### 2026-09-08 — HQ-L3 VLAN creation
+
+- **Execution/review:** lab author executed `show vlan brief`; review covers the supplied [original screenshot](evidence/2026-09-08_hq_l3_vlans.png). No configuration was applied during review.
+- **Expected:** HQ-L3 has VLANs 10 MGMT, 20 IT, 30 USERS, 40 SERVERS, 50 GUEST and 999 PARKING, all active.
+- **Observed:** all six IDs/names match and show `active`; the prompt is `HQ-L3#`. Their port columns are empty. VLAN 1 lists Fa0/1–24 and Gig0/1–2. This confirms local VLAN creation, not port assignment, trunking, SVI reachability or inter-VLAN routing.
+- **Save context:** no matching saved checkpoint has been verified; the screenshot does not identify the open filename. Startup configuration and saved VLAN-database persistence have not been checked.
+- **Result:** the HQ-L3 VLAN-creation slice matches its expected output; B2 remains partial. The following entry covers matching VLANs on HQ-SW1 and HQ-SW2. B3 and the remaining network behavior checks are not run.
+
+### 2026-09-08 — HQ access-switch VLAN creation
+
+- **Execution/review:** lab author configured HQ-SW1 and HQ-SW2, ran `wr` and `show vlan brief`, and supplied screenshots. Review covers the original [HQ-SW1 output](evidence/2026-09-08_hq_sw1_vlans.png) and [HQ-SW2 output](evidence/2026-09-08_hq_sw2_vlans.png), preserved without image edits.
+- **Expected:** each switch has VLANs 10 MGMT, 20 IT, 30 USERS, 40 SERVERS, 50 GUEST and 999 PARKING, all active, with a matching IOS hostname.
+- **Observed:** both outputs match all six IDs/names/statuses and show the correct device prompt. New VLAN port columns are empty; VLAN 1 still lists Fa0/1–24 and Gig0/1–2. Both `wr` commands return `Building configuration... [OK]`.
+- **Save context:** the current working file is `HQ-Branches-NOC-Lab_working_l3.pkt`, 121,971 bytes; SHA-256 `6752063f9d3cbc1a445a64f65cfa0adb6dc898e4a9153b672f371ff76c1dc210`. Its on-disk identity was checked, but it was not opened during review. Save-command acknowledgments do not establish screenshot-to-file consistency or VLAN/configuration persistence after reopening; no matching checkpoint has been verified.
+- **Result:** VLAN creation is observed on all three HQ switches. B2 remains partial; access-port assignment, trunks, SVIs and routing are pending. LACP support and operation are the next practical slice; B3 has not been run.
+
+### 2026-09-08 — Complete topology overview
+
+- **Execution/review:** lab author supplied the [current Packet Tracer overview](evidence/2026-09-08_full_topology.png); review covers the visible layout. The original screenshot is preserved without image edits.
+- **Expected:** 20 devices and 21 cables: HQ with its collapsed core and two separate access-switch pairs, two branches, shared WAN transport, and an ISP router with an external server.
+- **Observed:** all 20 devices and 21 cables are visible. Site-router G0/1 ports connect to WAN-SW F0/1, F0/2 and F0/3. HQ-R1 G0/2 connects to ISP-R1 G0/0; ISP-R1 G0/1 connects to EXT-SRV1. The two HQ access pairs remain separate, with no direct HQ-SW1–HQ-SW2 cable. An amber indicator is visible in each pair; no STP/LACP command output diagnoses their state. Some device labels overlap, and endpoint port labels are not shown.
+- **Save context:** the screenshot does not identify its open filename. No corresponding checkpoint was opened or tested during review.
+- **Result:** visible device/link counts match the build sheet. B1 remains partial pending checkpoint/reopen and remaining support checks. The DNS/HTTP annotation describes an intended service role; it does not verify service operation.
 
 For screenshots, keep device names, relevant port labels, or the command and its full result readable. Use one overview plus close-ups when the whole topology is too dense. For text output, include the device prompt, command, and complete response. Failed checks and CLI errors are useful evidence: preserve them before making a correction, then capture the new result under a different filename.
 

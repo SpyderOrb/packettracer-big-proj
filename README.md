@@ -2,17 +2,11 @@
 
 Cisco Packet Tracer lab connecting a headquarters in Kraków with branches in Katowice and Rzeszów. Built around network configuration, verification, and incident troubleshooting.
 
-**Status:** site layouts captured; HQ-L3 model and interface checks recorded. Full-network validation and configuration exports pending.
+**Status:** full layout captured; HQ-L3 inventory and VLAN creation on all three HQ switches recorded. Connectivity tests and configuration exports pending.
 
-<table>
-  <tr>
-    <td width="40%"><a href="docs/evidence/2026-09-07_hq_topology.png"><img src="docs/evidence/2026-09-07_hq_topology.png" alt="HQ layout with a 3560-24PS and two access switches" width="100%"></a></td>
-    <td width="30%"><a href="docs/evidence/2026-09-07_kat_topology.png"><img src="docs/evidence/2026-09-07_kat_topology.png" alt="Katowice router, access switch and two clients" width="100%"></a></td>
-    <td width="30%"><a href="docs/evidence/2026-09-07_rze_topology.png"><img src="docs/evidence/2026-09-07_rze_topology.png" alt="Rzeszow router, access switch and two clients" width="100%"></a></td>
-  </tr>
-</table>
+[![Packet Tracer topology: HQ, two branches, WAN transport and simulated Internet](docs/evidence/2026-09-08_full_topology.png)](docs/evidence/2026-09-08_full_topology.png)
 
-Separate Packet Tracer site views; open each image for detail. [Full target design](docs/NETWORK.md).
+Current layout, 2026-09-08. Open the image for detail; see the [network design](docs/NETWORK.md) for addressing and intended behavior.
 
 **Planned scope:** HQ collapsed core with SVI gateways, branch router-on-a-stick, VLANs, STP, LACP, OSPF, DHCP/DNS, NAT/PAT, SSH, and ACLs. Internet access is simulated inside the lab.
 
