@@ -2,11 +2,11 @@
 
 Cisco Packet Tracer lab connecting a headquarters in Kraków with branches in Katowice and Rzeszów. Built around network configuration, verification, and incident troubleshooting.
 
-**Status:** full layout captured; HQ-L3 inventory and VLAN creation on all three HQ switches recorded. Connectivity tests and configuration exports pending.
+**Status:** HQ VLAN assignments, both LACP trunks and VLAN 30 STP roles checked from CLI output. Routing tests and configuration exports pending.
 
-[![Packet Tracer topology: HQ, two branches, WAN transport and simulated Internet](docs/evidence/2026-09-08_full_topology.png)](docs/evidence/2026-09-08_full_topology.png)
+[![Packet Tracer topology: HQ VLAN labels, two branches, WAN transport and simulated Internet](docs/evidence/2026-09-09_full_topology.png)](docs/evidence/2026-09-09_full_topology.png)
 
-Current layout, 2026-09-08. Open the image for detail; see the [network design](docs/NETWORK.md) for addressing and intended behavior.
+Current layout, 2026-09-09. Open the image for detail; see the [network design](docs/NETWORK.md) for addressing and intended behavior.
 
 **Planned scope:** HQ collapsed core with SVI gateways, branch router-on-a-stick, VLANs, STP, LACP, OSPF, DHCP/DNS, NAT/PAT, SSH, and ACLs. Internet access is simulated inside the lab.
 

@@ -1,0 +1,51 @@
+HQ Po1 STP review — 2026-09-09
+
+Method: manual transcription of selected fields from the lab author's supplied
+combined screenshot. This is a review transcription, not a raw CLI export or
+a complete device configuration. Only VLAN 30 STP roles are shown.
+
+HQ-L3
+Visible configuration command:
+  spanning-tree vlan 10,20,30,40,50,999 root primary
+
+show spanning-tree vlan 30
+  Protocol: ieee
+  Root ID priority: 24606
+  Root ID address: 00E0.B0AD.63C0
+  This bridge is the root
+  Bridge ID priority: 24606 (priority 24576 sys-id-ext 30)
+  Bridge ID address: 00E0.B0AD.63C0
+  Po1: Desg FWD, Cost 12, Prio.Nbr 128.27, Type P2p
+
+HQ-SW1
+Visible configuration command:
+  spanning-tree vlan 10,20,30,40,50,999 root secondary
+
+show spanning-tree vlan 30
+  Protocol: ieee
+  Root ID priority: 24606
+  Root ID address: 00E0.B0AD.63C0
+  Root path cost: 12
+  Root port: 27 (Port-channel1)
+  Bridge ID priority: 28702 (priority 28672 sys-id-ext 30)
+  Bridge ID address: 00D0.BC1B.DAE3
+  Po1: Root FWD, Cost 12, Prio.Nbr 128.27, Type P2p
+
+show interfaces trunk
+  Port: Po1
+  Mode: on
+  Encapsulation: 802.1q
+  Status: trunking
+  Native VLAN: 999
+  VLANs allowed: 10,20,30,40,50,999
+  VLANs allowed and active: 10,20,30,40,50,999
+  VLANs forwarding and not pruned: 10,20,30,40,50,999
+
+Both STP outputs show Hello 2 sec, Max Age 20 sec and Forward Delay 15 sec.
+A standalone sh command in the HQ-L3 capture returns Incomplete command;
+the subsequent full show spanning-tree vlan 30 command returns the output above.
+
+Result: intended root and secondary-priority settings observed for VLAN 30;
+Po1 forwards for VLAN 30 and the HQ-SW1 forwarding list contains all six VLANs.
+Other VLAN root roles, saved-state persistence, endpoint traffic and failover
+remain unverified. No matching saved checkpoint is identified by this capture.
