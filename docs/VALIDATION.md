@@ -1,6 +1,6 @@
 # Validation
 
-**Reviewed 2026-09-13:** HQ VLANs, LACP, VLAN 30 STP roles, five SVIs, IT–Server traffic and the routed HQ link have supporting evidence. Branch routing, services, SSH, policy enforcement and failover tests remain pending. No complete clean baseline is validated.
+**Reviewed 2026-09-13:** HQ VLANs, LACP, VLAN 30 STP roles, five SVIs, IT–Server traffic and the routed HQ link have supporting evidence. Authenticated SSH 2.0 sessions to HQ-SW1 and HQ-SW2 also work. Branch routing, services, remaining SSH targets, policy enforcement and failover tests remain pending. No complete clean baseline is validated.
 
 The lab author ran the Packet Tracer checks. This record reviews supplied screenshots and configuration captures; expected results are separate from observed behavior. A planned diagram, configuration capture or saved file alone is not a passed traffic test.
 
@@ -25,7 +25,12 @@ Other results below are working-session evidence unless explicitly tied to the r
 | HQ SVIs · Sep 13 | Five planned .1 gateways up/up with connected routes | [SVIs/routes](evidence/2026-09-13_hq_l3_svi_routes.png): VLANs 10/20/30/40/50 up/up, connected /28, /28, /26, /28, /27; startup-save acknowledgment visible |
 | IT ↔ Server · Sep 13 | Both endpoints reach their own gateway and peer, 4/4 | [IT-PC1](evidence/2026-09-13_it_pc1_gateway_peer_ping.png): 10.10.20.10/28, gateway .20.1. [HQ-SRV1](evidence/2026-09-13_hq_srv1_gateway_peer_ping.png): 10.10.40.10/28, gateway .40.1. All four gateway/peer tests 4/4. Self-pings excluded from network-path evidence |
 | HQ routed link · Sep 13 | .2/30 on HQ-L3 G0/1, .1/30 on HQ-R1 G0/0; up/up and peer pings 5/5 | [HQ-L3](evidence/2026-09-13_hq_l3_routed_link.png) and [HQ-R1](evidence/2026-09-13_hq_r1_routed_link.png) match addresses, connected 10.255.1.0/30 and bidirectional 5/5. No default route yet; client-to-edge routing untested |
-| Configuration review · Sep 13 | Captures match the displayed configuration | [Four captures](../configs/README.md): VLAN/LACP/STP settings match, including HQ-L3 no switchport and /30 addresses. New HQ-L3/HQ-R1 captures omit opening lines before hostname; complete exports still required |
+| HQ switch management · Sep 13 | IT-PC1 reaches HQ-SW1 10.10.10.2 and HQ-SW2 10.10.10.3, 4/4 | [Management pings](evidence/2026-09-13_hq_management_ping.png): both destinations reply 4/4, 0% loss, TTL 254. Source identity follows the supplied test context; the capture does not show source addressing or the open checkpoint. Saved-state persistence remains untested |
+| HQ-SW1 SSH · Sep 13 | IT-PC1 authenticates to 10.10.10.2 and runs a command | [SSH session](evidence/2026-09-13_hq_sw1_ssh_login.png): login as admin reaches HQ-SW1 privileged EXEC; remote show ip interface reports Vlan10 10.10.10.2/28 up/up. Source follows test context. [SSH status](evidence/2026-09-13_hq_sw1_ssh_version.png) confirms version 2.0, authentication timeout 120 seconds and 3 retries. VTY source filtering and checkpoint persistence remain unverified |
+| HQ-SW2 SSH · Sep 13 | IT-PC1 authenticates to 10.10.10.3 and verifies SSH 2.0 | [Login and SSH status](evidence/2026-09-13_hq_sw2_ssh_login_version.png): login as admin reaches HQ-SW2 privileged EXEC; SSH enabled, version 2.0, timeout 120 seconds, 3 retries. Source follows test context. VTY source filtering and checkpoint persistence remain unverified |
+| HQ access-switch Telnet · Sep 13 | No Telnet login on 10.10.10.2 or 10.10.10.3 | [Telnet attempts](evidence/2026-09-13_hq_switches_telnet_closed.png): both attempts report Open, then Connection closed by foreign host, with no login prompt. PASS for observed denial of Telnet login; updated exports confirm transport input ssh on both VTY ranges. Source follows the IT-PC1 test context |
+| HQ access-switch privilege · Sep 13 | Administrative sessions report privilege level 15 | Author reports `Current privilege level is 15` on both HQ-SW1 and HQ-SW2. User-reported result only: no supporting screenshot or raw output supplied; current exports predate this report |
+| Configuration review · Sep 13 | Captures match observed operation and intended management settings | [Four captures](../configs/README.md): updated SW1/SW2 include correct Vlan10 /28 addresses, default gateway, SSH v2, login local, transport input ssh and access-class 10 in on both VTY ranges. ACL 10 permits only 10.10.20.0/28. Earlier interface/STP settings are unchanged. Public account credential lines are redacted; exports matching the later privilege report remain pending. HQ-L3/HQ-R1 opening lines remain incomplete |
 
 ## Troubleshooting observations
 
@@ -45,9 +50,9 @@ Partial means only the listed subchecks passed. Keep B1–B10 identifiers for fu
 | ID | Method and expected result | State |
 |---|---|---|
 | B1 | Open saved topology; verify 20 devices, 21 links, exact models/ports and required command support | Partial: layout/model and selected v02 reopen checks; full reopened inventory and named CDP peers pending |
-| B2 | VLAN/trunk/interface/route checks; local gateways and HQ /30 work | Partial: HQ results above; remaining HQ endpoints, branch LANs and persistence of the new routed link pending |
+| B2 | VLAN/trunk/interface/route checks; local gateways and HQ /30 work | Partial: HQ results above; HQ switch management pings also pass; remaining endpoints, branch LANs and persistence of recent changes pending |
 | B3 | HQ-L3 root; both LACP bundles SU/P. Independently disable/restore one member of each bundle; HQ-PC1/PC2 → 10.10.30.1 remains reachable | Partial: bundling and VLAN 30 roles; other VLAN root roles and member-failure/recovery traffic tests pending |
-| B4 | IT-PC1 can SSH to all eight corporate management addresses; Telnet disabled | Not run |
+| B4 | IT-PC1 can SSH to all eight corporate management addresses; Telnet disabled | Partial: HQ-SW1/HQ-SW2 SSH 2.0 logins pass and Telnet attempts close without login; VTY SSH-only/local-login/IT ACL settings match the exports. Privilege 15 is author-reported on both switches; corresponding captures, denied-source testing and other six devices pending |
 | B5 | OSPF neighbors FULL: HQ-R1 3, HQ-L3 1, each branch 2; correct /29 broadcast and /30 point-to-point types, learned HQ routes and default | Not run |
 | B6 | Renew all six DHCP client groups; correct address/mask/gateway/DNS; relay on HQ-L3 SVIs 30/50 and branch G0/0.30/.50 | Not run |
 | B7 | Corporate internal/external DNS and HTTP work; guests resolve external services | Not run |
