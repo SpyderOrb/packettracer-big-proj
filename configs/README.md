@@ -1,17 +1,24 @@
-# Device configuration exports
+# Device configurations
 
-**Status:** no configurations exported yet.
+One current capture per device. Configuration files describe the supplied state; the [validation record](../docs/VALIDATION.md) identifies what was tested and which checkpoint was used.
 
-Store one complete configuration per network device as `<hostname>.cfg`: HQ-L3, HQ-R1, KAT-R1, RZE-R1, ISP-R1, HQ-SW1, HQ-SW2, KAT-SW1, RZE-SW1, and WAN-SW (ten devices).
-
-## Save and export a device
-
-1. From the privileged EXEC prompt, run `copy running-config startup-config` and accept the default destination if prompted. Save the `.pkt` checkpoint separately. [Cisco configuration guide](https://www.cisco.com/c/en/us/td/docs/routers/ios/config/17-x/syst-mgmt/b-system-management/m_cm-config-files-0.html)
-2. Run `show running-config`, advance through every output page, and copy the complete configuration through the final `end` into `<hostname>.cfg`. Exclude CLI prompts and pager markers; record any redaction. Use dedicated lab credentials.
-3. Identify the corresponding checkpoint below. Keep earlier exports in a checkpoint-specific archive when replacing them. Record diagnostic output in `docs/evidence/`.
-
-Exports must reflect the actual devices, including configurations awaiting validation. Record Server-PT service settings as `HQ-SRV1.md` and `EXT-SRV1.md`; these devices do not provide IOS configuration exports.
-
-| Checkpoint | Export date | Devices exported |
+| Device | Capture | Reviewed scope / limitation |
 |---|---|---|
-| None | — | None |
+| HQ-L3 | [HQ-L3.cfg](HQ-L3.cfg) | VLAN gateways, LACP/STP and routed G0/1 at 10.255.1.2/30; opening lines before hostname are missing |
+| HQ-R1 | [HQ-R1.cfg](HQ-R1.cfg) | Routed G0/0 at 10.255.1.1/30; opening lines before hostname are missing |
+| HQ-SW1 | [HQ-SW1.cfg](HQ-SW1.cfg) | Access VLANs, Po1 trunk and secondary STP priority; supplied through end |
+| HQ-SW2 | [HQ-SW2.cfg](HQ-SW2.cfg) | Access VLANs and Po2 trunk; supplied through end |
+
+Reviewed 2026-09-13. The routed-link captures are newer than the reviewed pre-uplink v02 state. v02 was later resaved, so its current contents require verification. Complete export equality with a reopened checkpoint is not yet established. Captures are preserved as supplied; omitted commands have not been reconstructed. Other device exports and server service settings remain pending.
+
+## Restore notes
+
+- Before applying switch captures to a fresh device, create VLANs **10 MGMT, 20 IT, 30 USERS, 40 SERVERS, 50 GUEST and 999 PARKING** from the [design](../docs/NETWORK.md#vlans-and-addressing). VLAN definitions are absent from these captures; normal-range VLAN data can reside separately in `vlan.dat`. [Cisco VLAN storage guide](https://www.cisco.com/c/en/us/support/docs/switches/catalyst-2940-series-switches/109304-manage-vlandat.html)
+- Use the matching model and inspect the complete capture before applying it. Management SVIs on access switches, SSH, OSPF, DHCP relay, PAT and ACL policy are not yet represented in these files.
+- Server-PT settings must be recorded separately when configured; IOS exports do not include them.
+
+## Save and export
+
+1. Run `copy running-config startup-config` on changed devices, then save the Packet Tracer working file separately.
+2. Copy **all** of `show running-config`, including the opening configuration lines through the final `end`. Exclude prompts and pagination markers; record any redaction.
+3. Preserve the previous export before replacing `<hostname>.cfg`. Record the checkpoint and its relevant verification results in [Validation](../docs/VALIDATION.md).

@@ -1,22 +1,32 @@
 # HQ + Branches NOC Lab
 
-Cisco Packet Tracer lab connecting a headquarters in Kraków with branches in Katowice and Rzeszów. Built around network configuration, verification, and incident troubleshooting.
+A Cisco Packet Tracer network connecting a headquarters in **Kraków** with branches in **Katowice** and **Rzeszów**. The lab follows the work of a network support engineer: configure the network, verify traffic, diagnose faults and document recovery.
 
-**Status:** HQ VLAN assignments, both LACP trunks and VLAN 30 STP roles checked from CLI output. Routing tests and configuration exports pending.
+[![Logical network design: HQ collapsed core, two branches and a shared WAN](docs/topology.png)](docs/topology.png)
 
-[![Packet Tracer topology: HQ VLAN labels, two branches, WAN transport and simulated Internet](docs/evidence/2026-09-09_full_topology.png)](docs/evidence/2026-09-09_full_topology.png)
+*Logical architecture. Implementation progress and tested behavior are documented in [Validation](docs/VALIDATION.md).*
 
-Current layout, 2026-09-09. Open the image for detail; see the [network design](docs/NETWORK.md) for addressing and intended behavior.
+## The network
 
-**Planned scope:** HQ collapsed core with SVI gateways, branch router-on-a-stick, VLANs, STP, LACP, OSPF, DHCP/DNS, NAT/PAT, SSH, and ACLs. Internet access is simulated inside the lab.
+- **Headquarters:** a Layer 3 switch provides VLAN gateways; two access switches connect through separate LACP bundles.
+- **Branches:** each site uses a router and access switch with router-on-a-stick VLAN routing.
+- **Site connectivity:** shared Ethernet WAN transport, OSPF and a central Internet edge at HQ.
+- **Services and access:** DHCP relay, DNS/HTTP, NAT/PAT, SSH management and VLAN-based traffic controls.
 
-## Project files
+The design uses **20 devices and 21 physical links**. Internet services are simulated entirely inside Packet Tracer. HQ has one core switch and one Internet exit; redundancy exercises cover individual EtherChannel members.
 
-- [Network design and build steps](docs/NETWORK.md)
-- [Validation checklist and results](docs/VALIDATION.md)
-- [Device configuration exports](configs/README.md)
-- [Incident report template](incidents/TEMPLATE.md)
+## Explore the project
 
-## Reproduce
+| Start here | What you will find |
+|---|---|
+| [Network design](docs/NETWORK.md) | Devices, cabling, VLANs, addressing and traffic policy |
+| [Validation](docs/VALIDATION.md) | Verified results, supporting evidence and remaining checks |
+| [Device configurations](configs/README.md) | Current configuration captures and restore notes |
+| [Checkpoint status](docs/VALIDATION.md#checkpoints) | Saved-state verification and download availability |
+| [Incident template](incidents/TEMPLATE.md) | Structure for fault reproduction, diagnosis and recovery |
 
-Use **Cisco Packet Tracer 9.0.1** and follow the build steps. Save numbered milestones in `packet-tracer/checkpoints/`, export their device configurations, and record test evidence in `docs/evidence/`.
+## Run the lab
+
+1. Use **Cisco Packet Tracer 9.0.1** and follow the [build order](docs/NETWORK.md#build-order).
+2. Check [checkpoint availability and tested scope](docs/VALIDATION.md#checkpoints) before using a saved state. Keep a separate working copy for changes.
+3. Repeat the relevant [checks](docs/VALIDATION.md#test-checklist) and compare results with the configuration captures.

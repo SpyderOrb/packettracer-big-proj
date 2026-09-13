@@ -20,7 +20,7 @@
   </defs>
   <rect width="1440" height="1120" fill="#f4f7fb"/>
   <text x="44" y="51" class="title">HQ + Branches NOC Lab</text>
-  <text x="44" y="83" class="sub">HQ Layer 3 design · 20 devices / 21 physical links · Runtime validation pending</text>
+  <text x="44" y="83" class="sub">Logical design · 20 devices / 21 physical links</text>
 
   <rect x="40" y="420" width="440" height="610" rx="18" class="card"/>
   <rect x="520" y="420" width="440" height="610" rx="18" class="card"/>
