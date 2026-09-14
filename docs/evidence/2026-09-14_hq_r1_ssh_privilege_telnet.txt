@@ -1,0 +1,13 @@
+Supplied CLI transcript — 2026-09-14
+Source: IT-PC1 per test context; source addressing and the open checkpoint are not shown.
+Blank lines and trailing whitespace normalized; password value is not shown.
+
+C:\>telnet 10.255.1.1
+Trying 10.255.1.1 ...Open
+
+[Connection to 10.255.1.1 closed by foreign host]
+C:\>ssh -l admin 10.255.1.1
+Password:
+HQ-R1#sh pri
+Current privilege level is 15
+HQ-R1#

@@ -1,0 +1,24 @@
+Supplied CLI transcript — 2026-09-14
+Source: IT-PC1 per test context; source addressing is not displayed.
+Working-session evidence; exact saved checkpoint association unverified.
+
+C:\>ssh -l admin 10.10.10.1
+
+Password:
+
+
+
+HQ-L3#sh ip ssh
+SSH Enabled - version 2.0
+Authentication timeout: 120 secs; Authentication retries: 3
+HQ-L3#sh privi
+HQ-L3#sh privilege
+Current privilege level is 15
+HQ-L3#
+HQ-L3#exit
+
+[Connection to 10.10.10.1 closed by foreign host]
+C:\>telnet 10.10.10.1
+Trying 10.10.10.1 ...Open
+
+[Connection to 10.10.10.1 closed by foreign host]

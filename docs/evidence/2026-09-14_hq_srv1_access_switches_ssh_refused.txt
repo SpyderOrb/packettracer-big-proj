@@ -1,0 +1,40 @@
+Supplied CLI transcript — 2026-09-14
+Source: HQ-SRV1 per test context; this transcript does not repeat source addressing.
+The preceding server screenshot identifies 10.10.40.10/28, gateway 10.10.40.1.
+Working-session evidence; exact saved checkpoint association unverified.
+
+C:\>ping 10.10.10.2
+
+Pinging 10.10.10.2 with 32 bytes of data:
+
+Reply from 10.10.10.2: bytes=32 time<1ms TTL=254
+Reply from 10.10.10.2: bytes=32 time<1ms TTL=254
+Reply from 10.10.10.2: bytes=32 time<1ms TTL=254
+Reply from 10.10.10.2: bytes=32 time<1ms TTL=254
+
+Ping statistics for 10.10.10.2:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 0ms, Average = 0ms
+
+C:\>ping 10.10.10.3
+
+Pinging 10.10.10.3 with 32 bytes of data:
+
+Reply from 10.10.10.3: bytes=32 time<1ms TTL=254
+Reply from 10.10.10.3: bytes=32 time<1ms TTL=254
+Reply from 10.10.10.3: bytes=32 time<1ms TTL=254
+Reply from 10.10.10.3: bytes=32 time<1ms TTL=254
+
+Ping statistics for 10.10.10.3:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 0ms, Average = 0ms
+
+C:\>ssh -l admin 10.10.10.2
+
+% Connection refused by remote host
+C:\>ssh -l admin 10.10.10.3
+
+% Connection refused by remote host
+C:\>

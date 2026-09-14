@@ -1,0 +1,28 @@
+Supplied HQ-L3 configuration excerpt and CLI output — 2026-09-14
+This is a partial excerpt, not a full device export.
+Working-session evidence; exact saved checkpoint association unverified.
+
+access-list 10 permit 10.10.20.0 0.0.0.15
+!
+!
+!
+!
+!
+!
+line con 0
+!
+line aux 0
+!
+line vty 0 4
+ access-class 10 in
+ login local
+ transport input ssh
+!
+!
+!
+!
+end
+
+HQ-L3#sh access-lists
+Standard IP access list 10
+    10 permit 10.10.20.0 0.0.0.15 (3 match(es))

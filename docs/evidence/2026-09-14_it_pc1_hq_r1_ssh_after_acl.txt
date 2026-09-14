@@ -1,0 +1,9 @@
+Supplied CLI transcript — 2026-09-14
+Source identified by the lab author as IT-PC; source addressing and open filename are not displayed.
+Regression check after the reported ACL correction. Blank lines and trailing whitespace normalized; password not shown.
+
+C:\>ssh -l admin 10.255.1.1
+Password:
+HQ-R1#sh pri
+Current privilege level is 15
+HQ-R1#

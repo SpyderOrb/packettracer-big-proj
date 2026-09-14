@@ -1,0 +1,31 @@
+Supplied HQ-SW2 CLI excerpt — 2026-09-14
+Secret values and hashes are redacted; this is not a complete configuration.
+The command is accepted and startup-save acknowledgment is visible.
+The following running-config excerpt omits the requested account privilege.
+Cause and persistence after reopening remain unverified.
+
+HQ-SW2#conf t
+Enter configuration commands, one per line.  End with CNTL/Z.
+HQ-SW2(config)#username admin privilege 15 secret <REDACTED>
+HQ-SW2(config)#do wr
+Building configuration...
+[OK]
+HQ-SW2(config)#do sh run
+Building configuration...
+
+Current configuration : 1990 bytes
+!
+version 15.0
+no service timestamps log datetime msec
+no service timestamps debug datetime msec
+no service password-encryption
+!
+hostname HQ-SW2
+!
+!
+!
+ip ssh version 2
+ip domain-name lab.example
+!
+username admin secret 5 <REDACTED>
+!

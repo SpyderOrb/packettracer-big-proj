@@ -1,0 +1,31 @@
+Supplied CLI excerpts — 2026-09-14
+HQ-R1 neighbor/routes and IT-PC1-context ping. Source addressing and open checkpoint are not shown.
+Routing-code legend and excess blank lines omitted; supplied result rows retained.
+
+HQ-R1#sh ip ospf neighbor
+Neighbor ID     Pri   State           Dead Time   Address         Interface
+10.255.255.4      0   FULL/  -        00:00:34    10.255.1.2      GigabitEthernet0/0
+HQ-R1#sh ip route
+Gateway of last resort is not set
+
+     10.0.0.0/8 is variably subnetted, 7 subnets, 5 masks
+O       10.10.10.0/28 [110/2] via 10.255.1.2, 00:00:19, GigabitEthernet0/0
+O       10.10.20.0/28 [110/2] via 10.255.1.2, 00:00:19, GigabitEthernet0/0
+O       10.10.30.0/26 [110/2] via 10.255.1.2, 00:00:19, GigabitEthernet0/0
+O       10.10.40.0/28 [110/2] via 10.255.1.2, 00:00:19, GigabitEthernet0/0
+O       10.10.50.0/27 [110/2] via 10.255.1.2, 00:00:19, GigabitEthernet0/0
+C       10.255.1.0/30 is directly connected, GigabitEthernet0/0
+
+C:\>ping 10.255.1.1
+Pinging 10.255.1.1 with 32 bytes of data:
+
+Reply from 10.255.1.1: bytes=32 time<1ms TTL=254
+Reply from 10.255.1.1: bytes=32 time<1ms TTL=254
+Reply from 10.255.1.1: bytes=32 time<1ms TTL=254
+Reply from 10.255.1.1: bytes=32 time<1ms TTL=254
+
+Ping statistics for 10.255.1.1:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 0ms, Average = 0ms
+C:\>

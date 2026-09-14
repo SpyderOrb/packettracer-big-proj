@@ -1,0 +1,23 @@
+Supplied CLI transcript — 2026-09-14
+Source: IT-PC1 per test context; source addressing is not shown.
+Working-session recovery check; save/reopen persistence is not established.
+Blank lines and trailing whitespace normalized. Password values are not shown.
+
+C:\>ssh -l admin 10.10.10.2
+Password:
+HQ-SW1>en
+Password:
+HQ-SW1#sh privi
+HQ-SW1#sh privilege
+Current privilege level is 15
+HQ-SW1#exit
+
+[Connection to 10.10.10.2 closed by foreign host]
+C:\>ssh -l admin 10.10.10.3
+Password:
+HQ-SW2>en
+Password:
+HQ-SW2#sh pri
+HQ-SW2#sh privilege
+Current privilege level is 15
+HQ-SW2#

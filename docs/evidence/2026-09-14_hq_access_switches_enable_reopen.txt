@@ -1,0 +1,26 @@
+Supplied CLI transcript — 2026-09-14
+The lab author supplied this after the requested close/reopen check and reported the remaining save/export steps completed.
+Source: IT-PC1 per test context. Source addressing and the open filename are not shown.
+Blank lines and trailing whitespace normalized. Password values are not shown.
+This verifies the reported reopen workflow, not independent equality with an exact .pkt byte sequence.
+
+Cisco Packet Tracer PC Command Line 1.0
+C:\>ssh -l admin 10.10.10.2
+Password:
+HQ-SW1>en
+Password:
+HQ-SW1#sh pri
+Current privilege level is 15
+HQ-SW1#exit
+
+[Connection to 10.10.10.2 closed by foreign host]
+C:\>ssh -l admin 10.10.10.3
+Password:
+HQ-SW2>en
+Password:
+HQ-SW2#sh pri
+Current privilege level is 15
+HQ-SW2#exit
+
+[Connection to 10.10.10.3 closed by foreign host]
+C:\>

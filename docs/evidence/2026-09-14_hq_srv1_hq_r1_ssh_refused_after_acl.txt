@@ -1,0 +1,9 @@
+Supplied CLI transcript — 2026-09-14
+Source: HQ-SRV1 per continuing test context; source addressing is not displayed.
+The lab author reports correcting an omitted access-list. The exact configuration change was not supplied.
+Working-session evidence; post-correction IT access, full export and persistence remain unverified.
+
+C:\>ssh -l admin 10.255.1.1
+
+% Connection refused by remote host
+C:\>
