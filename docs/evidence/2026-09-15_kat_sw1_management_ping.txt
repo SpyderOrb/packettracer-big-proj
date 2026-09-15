@@ -1,0 +1,23 @@
+Supplied KAT-SW1 CLI excerpts — 2026-09-15
+Duplicate pasted block, repeated empty prompts and unused-port rows omitted.
+Repeat ping has five reply markers; no final statistics line was supplied.
+Working-session evidence; full export and saved-state persistence remain unverified.
+
+KAT-SW1#show ip int brief
+Interface              IP-Address      OK? Method Status                Protocol
+FastEthernet0/1        unassigned      YES manual up                    up
+FastEthernet0/2        unassigned      YES manual up                    up
+GigabitEthernet0/1     unassigned      YES manual up                    up
+Vlan1                  unassigned      YES manual administratively down down
+Vlan10                 10.20.10.2      YES manual up                    up
+
+KAT-SW1#ping 10.20.10.1
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 10.20.10.1, timeout is 2 seconds:
+.!!!!
+Success rate is 80 percent (4/5), round-trip min/avg/max = 0/0/0 ms
+
+KAT-SW1#ping 10.20.10.1
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 10.20.10.1, timeout is 2 seconds:
+!!!!!

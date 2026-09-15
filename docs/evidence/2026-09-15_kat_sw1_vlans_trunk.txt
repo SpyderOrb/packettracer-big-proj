@@ -1,0 +1,27 @@
+Supplied KAT-SW1 CLI excerpts — 2026-09-15
+VLAN 1 unused-port list and default legacy VLAN rows omitted; relevant supplied rows retained.
+Working-session evidence; full configuration and save/reopen persistence not yet checked.
+
+KAT-SW1#sh vlan brief
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+10   MGMT                             active
+30   USERS                            active    Fa0/1
+50   GUEST                            active    Fa0/2
+999  PARKING                          active
+
+KAT-SW1#sh int trun
+KAT-SW1#sh int trunk
+Port        Mode         Encapsulation  Status        Native vlan
+Gig0/1      on           802.1q         trunking      999
+
+Port        Vlans allowed on trunk
+Gig0/1      10,30,50,999
+
+Port        Vlans allowed and active in management domain
+Gig0/1      10,30,50,999
+
+Port        Vlans in spanning tree forwarding state and not pruned
+Gig0/1      10,30,50,999
+
+KAT-SW1#
