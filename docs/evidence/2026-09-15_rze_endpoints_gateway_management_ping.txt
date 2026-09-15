@@ -1,0 +1,30 @@
+Supplied endpoint CLI excerpts — 2026-09-15
+Sources follow RZE-PC1 and RZE-GUEST1 test context; source addressing is not displayed.
+Individual reply lines and repeated banners/prompts omitted; supplied ping statistics retained.
+Working-session checks before final access policy; Guest-to-Management is currently reachable.
+
+RZE-PC1 context:
+C:\>ping 10.30.30.1
+Ping statistics for 10.30.30.1:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 0ms, Average = 0ms
+
+C:\>ping 10.30.10.2
+Ping statistics for 10.30.10.2:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 0ms, Average = 0ms
+
+RZE-GUEST1 context:
+C:\>ping 10.30.50.1
+Ping statistics for 10.30.50.1:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 8ms, Average = 2ms
+
+C:\>ping 10.30.10.2
+Ping statistics for 10.30.10.2:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 0ms, Maximum = 0ms, Average = 0ms

@@ -1,0 +1,18 @@
+Supplied RZE-SW1 CLI output — 2026-09-15
+Follow-up trunk check. VLAN 30 STP role output was not supplied.
+Working-session evidence; initial empty-list cause and persistence remain unverified.
+
+RZE-SW1#sh in tr
+Port        Mode         Encapsulation  Status        Native vlan
+Gig0/1      on           802.1q         trunking      999
+
+Port        Vlans allowed on trunk
+Gig0/1      10,30,50,999
+
+Port        Vlans allowed and active in management domain
+Gig0/1      10,30,50,999
+
+Port        Vlans in spanning tree forwarding state and not pruned
+Gig0/1      10,30,50,999
+
+RZE-SW1#

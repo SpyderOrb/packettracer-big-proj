@@ -1,0 +1,9 @@
+Supplied WAN-SW VLAN table excerpt — 2026-09-15
+VLAN 1 unused-port list and default legacy VLAN rows omitted.
+Observed VLAN name is WAN_TRANSMIT; the proposed label was WAN_TRANSIT. VLAN ID and port membership match.
+This verifies VLAN membership, not operational port states or transit traffic.
+
+VLAN Name                             Status    Ports
+---- -------------------------------- --------- -------------------------------
+900  WAN_TRANSMIT                     active    Fa0/1, Fa0/2, Fa0/3
+WAN-SW#
