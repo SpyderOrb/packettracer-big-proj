@@ -1,0 +1,54 @@
+Katowice SSH checks — 2026-09-16
+Source: supplied endpoint CLI, IT-PC1 context from the requested test.
+
+C:\>ssh -l admin 10.20.10.2
+Password:
+KAT-SW1#sh pri
+Current privilege level is 15
+KAT-SW1#ex
+[Connection to 10.20.10.2 closed by foreign host]
+C:\>ssh -l admin 10.20.10.1
+Password:
+KAT-R1#sh pri
+Current privilege level is 15
+
+Author-reported result, without denial transcript:
+HQ-SRV1 SSH attempts are refused as expected.
+
+Author also reports router VTY support through index 15.
+The previous router capture displayed only VTY 0–4; this does not establish
+that higher VTY indices are unavailable. All supported VTY lines must be
+covered by the same authentication, SSH-only and source-ACL settings.
+Full-range configuration, SSH version, Telnet exclusion and persistence
+still require verification. No new full device exports supplied.
+
+Follow-up supplied CLI (2026-09-16):
+KAT-R1#sh run | section vty
+line vty 0 4
+ access-class 10 in
+ login local
+ transport input ssh
+line vty 5 15
+ access-class 10 in
+ login local
+ transport input ssh
+KAT-R1#sh ip ssh
+SSH Enabled - version 2.0
+Authentication timeout: 120 secs; Authentication retries: 3
+
+KAT-SW1#sh run | sec vty
+line vty 0 4
+ access-class 10 in
+ login local
+ transport input ssh
+line vty 5 15
+ access-class 10 in
+ login local
+ transport input ssh
+KAT-SW1#sh ip ssh
+SSH Enabled - version 2.0
+Authentication timeout: 120 secs; Authentication retries: 3
+
+Author reports Telnet refusal for the requested tests; no transcript supplied.
+Both devices now show full VTY 0–15 coverage and SSH version 2.0.
+Current ACL contents, full updated exports and reopen persistence remain to be reviewed.

@@ -1,0 +1,32 @@
+Selected reopen checks — 2026-09-16
+Source: supplied CLI following the requested v03 save/close/reopen procedure.
+Association with v03 follows test context; no on-screen filename or file hash supplied.
+Repeated blank lines omitted. No show privilege output supplied after reopening.
+
+HQ-R1#sh ip ospf neighbor
+Neighbor ID     Pri   State           Dead Time   Address         Interface
+10.255.255.4      0   FULL/  -        00:00:30    10.255.1.2      GigabitEthernet0/0
+10.255.255.3      1   FULL/DR         00:00:30    10.255.0.3      GigabitEthernet0/1
+10.255.255.2      1   FULL/BDR        00:00:30    10.255.0.2      GigabitEthernet0/1
+HQ-R1#
+
+C:\>ssh -l admin 10.30.10.1
+Password:
+RZE-R1#ex
+[Connection to 10.30.10.1 closed by foreign host]
+C:\>ssh -l admin 10.30.10.2
+Password:
+RZE-SW1>en
+Password:
+Password:
+RZE-SW1#ex
+[Connection to 10.30.10.2 closed by foreign host]
+
+Review (not CLI output):
+HQ-R1 has all three expected FULL neighbors after reported reopening.
+RZE is now DR, KAT remains BDR; earlier HQ was DR. Adjacencies are healthy.
+IT-context SSH reaches RZE-R1 privileged prompt directly. RZE-SW1 starts
+in user EXEC; password-authenticated enable reaches the privileged prompt.
+Two enable password prompts are visible; failure cause is not established.
+No numeric privilege level is shown in this reopen test.
+These checks do not establish full checkpoint persistence or export equality.

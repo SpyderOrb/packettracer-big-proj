@@ -1,0 +1,56 @@
+Rzeszow SSH checks — 2026-09-16
+Source: supplied SSH CLI, IT-PC1 context from requested test.
+Selected verbatim excerpts; blank lines, prompts and exit output omitted.
+The final supplied disconnect message was truncated.
+
+RZE-SW1 authentication excerpt:
+C:\>ssh -l admin 10.30.10.2
+Password:
+% Login invalid
+Password:
+RZE-SW1#sh pri
+Current privilege level is 15
+RZE-SW1#sh ip ssh
+SSH Enabled - version 2.0
+Authentication timeout: 120 secs; Authentication retries: 3
+RZE-SW1#sh run | section vty
+line vty 0 4
+ access-class 10 in
+ login local
+ transport input ssh
+line vty 5 15
+ access-class 10 in
+ login local
+ transport input ssh
+RZE-SW1#sh access-lists 10
+Standard IP access list 10
+    permit 10.10.20.0 0.0.0.15 (5 match(es))
+
+C:\>ssh -l admin 10.30.10.1
+Password:
+RZE-R1#sh pri
+Current privilege level is 15
+RZE-R1#sh ip ssh
+SSH Enabled - version 2.0
+Authentication timeout: 120 secs; Authentication retries: 3
+RZE-R1#sh run | sec vty
+line vty 0 4
+ access-class 10 in
+ login local
+ transport input ssh
+line vty 5 15
+ access-class 10 in
+ login local
+ transport input ssh
+RZE-R1#sh access-lists 10
+Standard IP access list 10
+    permit 10.10.20.0 0.0.0.15 (4 match(es))
+
+Review notes (not CLI output):
+Both IT-context SSH logins succeed with privilege 15; SSH version 2.0 and
+IT-only ACL 10 on all VTY 0–15 are confirmed. The switch first rejects a
+login attempt, then accepts the retry; reason for initial rejection unknown.
+HQ-SRV1 SSH refusal was author-reported in the preceding message without output.
+Telnet attempts, refreshed complete exports and reopen persistence are pending.
+
+Follow-up: author confirms the requested Telnet attempts close without authorization; no Telnet output supplied. Complete refreshed RZE router/switch exports confirm SSH v2, IT-only ACL 10 and full VTY coverage. Saving/exporting acknowledged; reopen persistence remains unverified.
