@@ -1,0 +1,34 @@
+Shared WAN OSPF — supplied CLI review, 2026-09-16
+Source: user-supplied show ip ospf neighbor / show ip route ospf output.
+Selected verbatim excerpts below; prompts, timers and unrelated route rows omitted where indicated.
+No saved-checkpoint identity supplied. The supplied RZE final route line is truncated.
+
+Neighbor excerpts (complete neighbor rows):
+RZE-R1:
+10.255.255.1      1   FULL/DR         00:00:33    10.255.0.1      GigabitEthernet0/1
+10.255.255.2      1   FULL/BDR        00:00:36    10.255.0.2      GigabitEthernet0/1
+KAT-R1:
+10.255.255.1      1   FULL/DR         00:00:36    10.255.0.1      GigabitEthernet0/1
+10.255.255.3      1   FULL/DROTHER    00:00:34    10.255.0.3      GigabitEthernet0/1
+HQ-R1:
+10.255.255.4      0   FULL/  -        00:00:39    10.255.1.2      GigabitEthernet0/0
+10.255.255.2      1   FULL/BDR        00:00:39    10.255.0.2      GigabitEthernet0/1
+10.255.255.3      1   FULL/DROTHER    00:00:33    10.255.0.3      GigabitEthernet0/1
+
+RZE routes seen on KAT-R1 (verbatim):
+O       10.30.30.0 [110/2] via 10.255.0.3, 00:03:57, GigabitEthernet0/1
+O       10.30.50.0 [110/2] via 10.255.0.3, 00:03:46, GigabitEthernet0/1
+RZE routes seen on HQ-R1 (verbatim):
+O       10.30.30.0 [110/2] via 10.255.0.3, 00:04:20, GigabitEthernet0/1
+O       10.30.50.0 [110/2] via 10.255.0.3, 00:04:09, GigabitEthernet0/1
+
+Review summary (not CLI output):
+Expected neighbor counts pass: HQ-R1 3, KAT-R1 2, RZE-R1 2, all FULL.
+Shared-segment roles: HQ DR, KAT BDR, RZE DROTHER.
+HQ-R1 learns five HQ VLAN networks and all three KAT VLAN networks.
+RZE-R1 learns five HQ VLAN networks and all three KAT VLAN networks.
+KAT-R1 learns five HQ VLAN networks.
+Both branches learn the HQ core-edge network 10.255.1.0.
+10.30.10.0 is absent from both supplied HQ-R1 and KAT-R1 OSPF route lists.
+The filtered output does not display individual prefix lengths.
+RZE management advertisement/interface state requires diagnosis; cause not confirmed.

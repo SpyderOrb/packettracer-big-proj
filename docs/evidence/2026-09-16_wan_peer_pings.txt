@@ -1,0 +1,23 @@
+Shared WAN peer reachability — 2026-09-16
+Source: supplied router CLI output. No saved-checkpoint identity supplied.
+
+HQ-R1#ping 10.255.0.2
+
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 10.255.0.2, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 0/0/0 ms
+
+HQ-R1#ping 10.255.0.3
+
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 10.255.0.3, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 0/2/13 ms
+
+KAT-R1#ping 10.255.0.3
+
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 10.255.0.3, timeout is 2 seconds:
+!!!!!
+Success rate is 100 percent (5/5), round-trip min/avg/max = 0/0/4 ms

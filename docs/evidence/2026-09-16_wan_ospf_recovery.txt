@@ -1,0 +1,32 @@
+Shared WAN OSPF follow-up — 2026-09-16
+Source: supplied show ip route ospf and show ip ospf neighbor output.
+Selected verbatim excerpts; other route rows omitted and summarized below.
+No configuration change or saved-checkpoint identity supplied.
+
+HQ-R1 recovered route:
+O       10.30.10.0 [110/2] via 10.255.0.3, 00:01:30, GigabitEthernet0/1
+KAT-R1 recovered route:
+O       10.30.10.0 [110/2] via 10.255.0.3, 00:01:51, GigabitEthernet0/1
+
+HQ-R1 neighbor rows:
+10.255.255.4      0   FULL/  -        00:00:35    10.255.1.2      GigabitEthernet0/0
+10.255.255.2      1   FULL/BDR        00:00:34    10.255.0.2      GigabitEthernet0/1
+10.255.255.3      1   FULL/DROTHER    00:00:38    10.255.0.3      GigabitEthernet0/1
+KAT-R1 neighbor rows:
+10.255.255.1      1   FULL/DR         00:00:36    10.255.0.1      GigabitEthernet0/1
+10.255.255.3      1   FULL/DROTHER    00:00:34    10.255.0.3      GigabitEthernet0/1
+RZE-R1 neighbor rows:
+10.255.255.1      1   FULL/DR         00:00:33    10.255.0.1      GigabitEthernet0/1
+10.255.255.2      1   FULL/BDR        00:00:36    10.255.0.2      GigabitEthernet0/1
+
+Review summary (not CLI output):
+HQ-R1: 11 O routes — five HQ VLAN networks via 10.255.1.2;
+three KAT VLAN networks via 10.255.0.2; three RZE VLAN networks via 10.255.0.3.
+KAT-R1: 9 O routes — five HQ VLAN networks and 10.255.1.0 via 10.255.0.1;
+three RZE VLAN networks via 10.255.0.3.
+RZE-R1: 9 O routes — five HQ VLAN networks and 10.255.1.0 via 10.255.0.1;
+three KAT VLAN networks via 10.255.0.2.
+Expected remote network destinations and next hops are present on all three routers.
+Individual prefix lengths are not shown in the supplied filtered output.
+Previously absent RZE management route is now present; cause/change is unconfirmed.
+HQ-L3 runtime routes, end-to-end traffic, refreshed exports and persistence remain pending.

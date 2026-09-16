@@ -1,0 +1,31 @@
+HQ-L3 OSPF and IT-to-branch management — 2026-09-16
+Source: supplied CLI excerpts. Endpoint source follows IT-PC1 test context;
+no ipconfig, ping summary or saved-checkpoint identity supplied.
+Repeated incomplete command prompts omitted.
+
+HQ-L3#sh ip ospf neighbor
+Neighbor ID     Pri   State           Dead Time   Address         Interface
+10.255.255.1      0   FULL/  -        00:00:33    10.255.1.1      GigabitEthernet0/1
+HQ-L3#sh ip route ospf
+     10.0.0.0/8 is variably subnetted, 13 subnets, 5 masks
+O       10.20.10.0 [110/3] via 10.255.1.1, 00:13:30, GigabitEthernet0/1
+O       10.20.30.0 [110/3] via 10.255.1.1, 00:13:10, GigabitEthernet0/1
+O       10.20.50.0 [110/3] via 10.255.1.1, 00:13:00, GigabitEthernet0/1
+O       10.30.10.0 [110/3] via 10.255.1.1, 00:03:54, GigabitEthernet0/1
+O       10.30.30.0 [110/3] via 10.255.1.1, 00:09:46, GigabitEthernet0/1
+O       10.30.50.0 [110/3] via 10.255.1.1, 00:09:35, GigabitEthernet0/1
+O       10.255.0.0 [110/2] via 10.255.1.1, 00:13:40, GigabitEthernet0/1
+
+C:\>ping 10.20.10.2
+Pinging 10.20.10.2 with 32 bytes of data:
+Reply from 10.20.10.2: bytes=32 time=12ms TTL=252
+Reply from 10.20.10.2: bytes=32 time=4ms TTL=252
+Reply from 10.20.10.2: bytes=32 time<1ms TTL=252
+Reply from 10.20.10.2: bytes=32 time<1ms TTL=252
+
+C:\>ping 10.30.10.2
+Pinging 10.30.10.2 with 32 bytes of data:
+Reply from 10.30.10.2: bytes=32 time=1ms TTL=252
+Reply from 10.30.10.2: bytes=32 time=13ms TTL=252
+Reply from 10.30.10.2: bytes=32 time<1ms TTL=252
+Reply from 10.30.10.2: bytes=32 time<1ms TTL=252
