@@ -123,6 +123,8 @@ TP-01–TP-13 define the required policy; verification is tracked separately. Us
 | TP-12 | Simulated Internet → internal zones | No unsolicited inbound access or published internal services |
 | TP-13 | Other unlisted routed zone pairs | Deny |
 
+First Guest enforcement slice: named extended ACLs `GUEST_HQ_IN`, `GUEST_KAT_IN`, and `GUEST_RZE_IN` inbound on HQ-L3 Vlan50, KAT-R1 G0/0.50, and RZE-R1 G0/0.50 respectively. Permit client DHCP broadcasts (UDP 68 to broadcast port 67), subnet-sourced unicast renewals to HQ-SRV1 UDP 67, ICMP echo to the local guest gateway, and subnet-sourced DNS UDP/TCP 53, HTTP TCP 80 and ICMP echo to the current simulated external service host 203.0.113.10. End with an explicit deny for other traffic. Existing relay/NAT and VTY ACLs stay in place. This source-side slice does not complete the other zone or external-inbound policies; tested paths and remaining checks are recorded in [Validation](VALIDATION.md).
+
 Permit the specific DHCP relay exchanges, OSPF control traffic, and replies needed by allowed flows. ARP and local gateway operation must still work. Same-VLAN traffic bypasses routed ACLs: use different routed zones for isolation tests. Ordinary static ACLs do not provide full session tracking; TCP `established` checks flags and does not handle UDP or ICMP replies. Plan those reply rules explicitly. [Cisco ACL behavior](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/sec_data_acl/configuration/15-sy/sec-data-acl-15-sy-book/sec-cfg-ip-filter.html)
 
 ## Build order
