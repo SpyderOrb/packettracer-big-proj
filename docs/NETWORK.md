@@ -133,13 +133,94 @@ Katowice Users slice (full export and selected traffic evidenced; remaining assi
 
 Rzeszow Users slice (full export and permitted services evidenced; IT reply and denied-path outcomes author-confirmed): `USERS_RZE_IN` inbound on RZE-R1 G0/0.30. Reuse the same ten ACE purposes with source `10.30.30.0/27` (wildcard `0.0.0.31`) and own gateway `10.30.30.1`. Keep internal server/DNS `10.10.40.10`, external host `203.0.113.10` and IT echo-reply destination `10.10.20.0/28`. Verify first-time RZE permits, IT reply path and forbidden new internal traffic, then save/export. Rollback removes only the G0/0.30 USERS_RZE_IN inbound binding. Existing successful HQ/KAT checks need no repeat for this slice.
 
-Planned IT source slice (not yet applied/validated): `IT_HQ_IN` inbound on HQ-L3 Vlan20, source `10.10.20.0/28` (wildcard `0.0.0.15`). Seventeen ACEs: echo to own gateway `10.10.20.1`; DNS UDP/TCP 53, HTTP TCP 80 and echo to HQ-SRV1 `10.10.40.10`; SSH TCP 22 and echo to each Management subnet (`10.10.10.0/28`, `10.20.10.0/28`, `10.30.10.0/28`) and separately HQ-R1 `10.255.1.1`; echo to all three Users subnets (`10.10.30.0/26`, `10.20.30.0/27`, `10.30.30.0/27`); explicit deny for everything else. Management destinations use their zone prefixes, plus the explicit HQ-R1 transit-address exception. IT addressing is static, so this ACL needs no client DHCP exception.
+IT source slice (full export and selected permit/deny traffic evidenced; external HTTP denial author-confirmed; full persistence unconfirmed): `IT_HQ_IN` inbound on HQ-L3 Vlan20, source `10.10.20.0/28` (wildcard `0.0.0.15`). Seventeen ACEs: echo to own gateway `10.10.20.1`; DNS UDP/TCP 53, HTTP TCP 80 and echo to HQ-SRV1 `10.10.40.10`; SSH TCP 22 and echo to each Management subnet (`10.10.10.0/28`, `10.20.10.0/28`, `10.30.10.0/28`) and separately HQ-R1 `10.255.1.1`; echo to all three Users subnets (`10.10.30.0/26`, `10.20.30.0/27`, `10.30.30.0/27`); explicit deny for everything else. Management destinations use their zone prefixes, plus the explicit HQ-R1 transit-address exception. IT addressing is static, so this ACL needs no client DHCP exception.
 
-This implements IT-source TP-03/04/05 and the relevant TP-13 default deny. IT-to-Guest and IT-to-external HTTP/ICMP are unlisted and are therefore denied; earlier IT external successes were pre-policy reachability tests. HQ PAT ACL 20 can retain the IT prefix: NAT eligibility is not permission through IT_HQ_IN. Requests from IT enter Vlan20; replies return toward Vlan20 without traversing this inbound ACL. Existing Users echo-reply permits retain the diagnostic reply path. SSH follow-up packets from IT still match destination TCP 22. Do not add a broad permit ip rule. Server/Management source restrictions and edge-inbound controls remain later slices.
+This implements IT-source TP-03/04/05 and the relevant TP-13 default deny. IT-to-Guest and IT-to-external HTTP/ICMP are unlisted and are therefore denied; earlier IT external successes were pre-policy reachability tests. HQ PAT ACL 20 can retain the IT prefix: NAT eligibility is not permission through IT_HQ_IN. Requests from IT enter Vlan20; replies return toward Vlan20 without traversing this inbound ACL. Existing Users echo-reply permits retain the diagnostic reply path. SSH follow-up packets from IT still match destination TCP 22. Do not add a broad permit ip rule. Server and Management source restrictions are described below; edge-inbound controls remain pending.
 
-Before binding, confirm all seventeen ACEs were accepted from the local HQ-L3 console. Validate new IT permit/deny behavior, including a known-working internal site, IT-originated SSH to HQ-R1/RZE-R1, Users diagnostics and Guest-gateway/external denials with counters. These are checks of the new IT ACL, not repetitions of unchanged Users/Guest source policies. Rollback removes only `IT_HQ_IN` inbound from Vlan20. Save/export the actual HQ-L3 configuration after results match expectations.
+The installed HQ-L3 accepted all seventeen ACEs and the Vlan20 inbound binding. The supplied batch demonstrates IT internal HTTP and diagnostics, Users echo replies, HQ-R1/RZE-R1 SSH and Guest-gateway/external ICMP denials with a +16 deny delta. External HTTP timeout is subsequently author-confirmed; no separate screenshot is supplied. See [Validation](VALIDATION.md) for exact destinations and limitations. Rollback removes only `IT_HQ_IN` inbound from Vlan20. The actual full HQ-L3 export is reviewed; saving is author-reported, without an exact reopened-state claim.
 
 Permit the specific DHCP relay exchanges, OSPF control traffic, and replies needed by allowed flows. ARP and local gateway operation must still work. Same-VLAN traffic bypasses routed ACLs: use different routed zones for isolation tests. Ordinary static ACLs do not provide full session tracking; TCP `established` checks flags and does not handle UDP or ICMP replies. Plan those reply rules explicitly. [Cisco ACL behavior](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/sec_data_acl/configuration/15-sy/sec-data-acl-15-sy-book/sec-cfg-ip-filter.html)
+
+Servers source slice (configuration/export and scoped traffic reviewed; own-gateway follow-up passed and disk save updated; full persistence unverified): `SERVERS_HQ_IN` inbound on HQ-L3 Vlan40. All permits identify HQ-SRV1 `10.10.40.10`; other server-subnet sources receive no implicit permission. Six DHCP relay replies use UDP source/destination 67 to the client-facing relay addresses; six direct renewal reply rules use UDP 67 to client port 68. Corporate DNS/HTTP replies cover IT and all three Users prefixes, with source UDP/TCP 53 or TCP 80. TCP replies require `established` (ACK/RST); UDP port matching and ICMP echo-reply are stateless exceptions, not connection tracking. Permit echo-reply to IT and echo to the server's own gateway, then deny everything else. No external DNS recursion, server-originated SSH, or general server Internet access is planned. [Cisco DHCP relay behavior](https://www.cisco.com/c/en/us/support/docs/ip/dynamic-address-allocation-resolution/27470-100.html), [Cisco ACL examples and established](https://www.cisco.com/c/en/us/support/docs/ip/access-lists/26448-ACLsamples.html).
+
+The 27 ACEs below were accepted on the installed HQ-L3, including `established`, and the Vlan40 binding is shown. IT HTTP succeeds with hits on its established reply rule; full TCP DNS behavior is not separately tested. Binding: `interface Vlan40`, then `ip access-group SERVERS_HQ_IN in`. Rollback removes only that inbound binding. Other VLANs and relay/router-generated traffic retain their existing settings.
+
+```ios
+ip access-list extended SERVERS_HQ_IN
+ permit udp host 10.10.40.10 eq 67 host 10.10.30.1 eq 67
+ permit udp host 10.10.40.10 eq 67 host 10.10.50.1 eq 67
+ permit udp host 10.10.40.10 eq 67 host 10.20.30.1 eq 67
+ permit udp host 10.10.40.10 eq 67 host 10.20.50.1 eq 67
+ permit udp host 10.10.40.10 eq 67 host 10.30.30.1 eq 67
+ permit udp host 10.10.40.10 eq 67 host 10.30.50.1 eq 67
+ permit udp host 10.10.40.10 eq 67 10.10.30.0 0.0.0.63 eq 68
+ permit udp host 10.10.40.10 eq 67 10.10.50.0 0.0.0.31 eq 68
+ permit udp host 10.10.40.10 eq 67 10.20.30.0 0.0.0.31 eq 68
+ permit udp host 10.10.40.10 eq 67 10.20.50.0 0.0.0.15 eq 68
+ permit udp host 10.10.40.10 eq 67 10.30.30.0 0.0.0.31 eq 68
+ permit udp host 10.10.40.10 eq 67 10.30.50.0 0.0.0.15 eq 68
+ permit udp host 10.10.40.10 eq 53 10.10.20.0 0.0.0.15
+ permit tcp host 10.10.40.10 eq 53 10.10.20.0 0.0.0.15 established
+ permit tcp host 10.10.40.10 eq 80 10.10.20.0 0.0.0.15 established
+ permit udp host 10.10.40.10 eq 53 10.10.30.0 0.0.0.63
+ permit tcp host 10.10.40.10 eq 53 10.10.30.0 0.0.0.63 established
+ permit tcp host 10.10.40.10 eq 80 10.10.30.0 0.0.0.63 established
+ permit udp host 10.10.40.10 eq 53 10.20.30.0 0.0.0.31
+ permit tcp host 10.10.40.10 eq 53 10.20.30.0 0.0.0.31 established
+ permit tcp host 10.10.40.10 eq 80 10.20.30.0 0.0.0.31 established
+ permit udp host 10.10.40.10 eq 53 10.30.30.0 0.0.0.31
+ permit tcp host 10.10.40.10 eq 53 10.30.30.0 0.0.0.31 established
+ permit tcp host 10.10.40.10 eq 80 10.30.30.0 0.0.0.31 established
+ permit icmp host 10.10.40.10 10.10.20.0 0.0.0.15 echo-reply
+ permit icmp host 10.10.40.10 host 10.10.40.1 echo
+ deny ip any any
+```
+
+The supplied batch shows HQ-PC1 DHCP, IT intranet HTTP/server ping, and four server-originated ping denials with +16 deny hits. Remaining assigned DHCP and intranet checks are author-reported. The initial server self-ping was followed by a successful 4/4 gateway test to 10.10.40.1. Working_l3 now has a new disk identity after the save follow-up; exact contents and full persistence are not independently verified. See [Validation](VALIDATION.md) for exact scope. These are service checks affected by the new server reply filter. Direct renewal replies and TCP DNS require separate evidence before claiming those rules exercised. Successful prior IT/Guest/Users source tests are not reassigned. Management source controls are described below; ISP-facing controls remain pending.
+
+HQ Management source slice (full export, IT SSH and representative denial reviewed): `MGMT_HQ_IN` inbound on HQ-L3 Vlan10, source `10.10.10.0/28`. Four ACEs retain SSH replies from source TCP 22 to IT with ACK/RST, ICMP echo-reply to IT, and echo to the Management gateway `10.10.10.1`; deny remaining routed traffic from this VLAN. Static Management addressing needs no DHCP exception. Existing VTY ACL 10 remains in place and controls who can log in; this SVI ACL controls traffic arriving from the Management VLAN.
+
+```ios
+ip access-list extended MGMT_HQ_IN
+ permit tcp 10.10.10.0 0.0.0.15 eq 22 10.10.20.0 0.0.0.15 established
+ permit icmp 10.10.10.0 0.0.0.15 10.10.20.0 0.0.0.15 echo-reply
+ permit icmp 10.10.10.0 0.0.0.15 host 10.10.10.1 echo
+ deny ip any any
+```
+
+Apply the four accepted ACEs on the local HQ-L3 console, then bind to Vlan10 with `ip access-group MGMT_HQ_IN in`. Rollback removes only that binding. Retain a pre-change v10_servers-acl checkpoint if not already saved; continue in working_l3. Equivalent branch Management configurations and the section acceptance sample are documented below.
+
+Section acceptance sample (results and untested paths recorded in Validation): fresh IT SSH to HQ-SW1, KAT-SW1 and RZE-SW1 (one per site); IT ping to HQ-SW1; denied HQ-SW1-to-IT and KAT-SW1-to-server pings, correlated with their respective ACL counters. These six checks sample SSH reply paths, ICMP replies and representative source denials. IOS normally sends five probes per ping; one isolated denied command should add five hits. HQ-SW2 duplicate tests, repeated gateway pings and extra forbidden destinations are not required for this section. Their unsampled behavior must not be described as a new runtime pass. Save/export the three changed gateways and working_l3 together after the section.
+
+Scope: these checks exercise access-switch Management traffic entering HQ-L3. Traffic between hosts in the same Management VLAN bypasses this routed ACL. HQ-L3's own locally generated traffic does not enter Vlan10 from an external source; ping from HQ-L3 is therefore not a substitute for the HQ-SW1 deny tests. This slice does not claim full control of infrastructure-originated traffic. SSH reply flag matching is not session tracking. [Cisco interface ACL direction and local traffic](https://www.cisco.com/c/en/us/td/docs/ios-xml/ios/sec_data_acl/configuration/15-s/sec-data-acl-15-s-book/sec-acl-ov-gdl.html).
+
+Branch Management source slices (full exports and IT SSH reviewed; KAT representative denial shown): bind `MGMT_KAT_IN` inbound on KAT-R1 G0/0.10 and `MGMT_RZE_IN` inbound on RZE-R1 G0/0.10. Each uses four ACEs with its own Management /28 and gateway. IT reply destination remains `10.10.20.0/28`. Configure through each router's local console; apply only if all four ACEs are accepted. Existing VTY, Users, Guest and WAN settings stay in place. Rollback removes only the respective G0/0.10 inbound Management ACL binding.
+
+```ios
+! KAT-R1
+ip access-list extended MGMT_KAT_IN
+ permit tcp 10.20.10.0 0.0.0.15 eq 22 10.10.20.0 0.0.0.15 established
+ permit icmp 10.20.10.0 0.0.0.15 10.10.20.0 0.0.0.15 echo-reply
+ permit icmp 10.20.10.0 0.0.0.15 host 10.20.10.1 echo
+ deny ip any any
+exit
+interface GigabitEthernet0/0.10
+ ip access-group MGMT_KAT_IN in
+```
+
+```ios
+! RZE-R1
+ip access-list extended MGMT_RZE_IN
+ permit tcp 10.30.10.0 0.0.0.15 eq 22 10.10.20.0 0.0.0.15 established
+ permit icmp 10.30.10.0 0.0.0.15 10.10.20.0 0.0.0.15 echo-reply
+ permit icmp 10.30.10.0 0.0.0.15 host 10.30.10.1 echo
+ deny ip any any
+exit
+interface GigabitEthernet0/0.10
+ ip access-group MGMT_RZE_IN in
+```
+
+After both branches, run the six planned section samples above. Save changed device configurations, export HQ-L3/KAT-R1/RZE-R1 together and save working_l3; a new checkpoint or reopen is not required for each branch. Static acceptance does not establish runtime behavior. Branch router-local traffic and same-VLAN traffic have the same scope limitations described for HQ.
 
 ## Build order
 
@@ -149,4 +230,4 @@ Permit the specific DHCP relay exchanges, OSPF control traffic, and replies need
 4. Apply TP-01–TP-13 and verify permitted traffic, denied traffic and service regressions.
 5. Save a clean baseline, export matching configurations, and reproduce four incidents in separate copies: wrong access VLAN, OSPF adjacency failure, missing DHCP relay and an ACL blocking a required service.
 
-After each working slice, run the relevant [tests](VALIDATION.md#test-checklist), save device startup configurations and a numbered `.pkt`, export configurations, and record the result. Preserve earlier checkpoints. Reserve `packet-tracer/HQ-Branches-NOC-Lab.pkt` for the fully validated baseline.
+After each functional section, run a representative selection from the [test catalogue](VALIDATION.md#test-checklist), save device startup configurations and the working `.pkt`, export changed configurations together, and record the result. Retain numbered checkpoints at meaningful milestones; use one final representative reopen/regression batch. Preserve earlier checkpoints. Reserve `packet-tracer/HQ-Branches-NOC-Lab.pkt` for the fully validated baseline.
