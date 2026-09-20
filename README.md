@@ -1,5 +1,7 @@
 # HQ + Branches NOC Lab
 
+[![Cisco Packet Tracer topology: Krakow HQ, Katowice and Rzeszow branches, shared WAN and simulated Internet](docs/packet-tracer-topology.png)](docs/packet-tracer-topology.png)
+
 A Cisco Packet Tracer network connecting a headquarters in **Kraków** with branches in **Katowice** and **Rzeszów**. The lab follows the work of a network support engineer: configure the network, verify traffic, diagnose faults and document recovery.
 
 [![Logical network design: HQ collapsed core, two branches and a shared WAN](docs/topology.png)](docs/topology.png)
@@ -23,6 +25,7 @@ The design uses **20 devices and 21 physical links**. Internet services are simu
 | [Validation](docs/VALIDATION.md) | Verified results, supporting evidence and remaining checks |
 | [Device configurations](configs/README.md) | Current configuration captures and restore notes |
 | [Checkpoint status](docs/VALIDATION.md#checkpoints) | Saved-state verification and download availability |
+| Incident reports | [Wrong VLAN](incidents/IR-001/README.md), [OSPF adjacency](incidents/IR-002/README.md), [DHCP relay](incidents/IR-003/README.md), [HTTP ACL](incidents/IR-004/README.md) |
 | [Incident template](incidents/TEMPLATE.md) | Structure for fault reproduction, diagnosis and recovery |
 
 ## Run the lab
