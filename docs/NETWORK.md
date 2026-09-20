@@ -135,7 +135,7 @@ Rzeszow Users slice (full export and permitted services evidenced; IT reply and 
 
 IT source slice (full export and selected permit/deny traffic evidenced; external HTTP denial author-confirmed; full persistence unconfirmed): `IT_HQ_IN` inbound on HQ-L3 Vlan20, source `10.10.20.0/28` (wildcard `0.0.0.15`). Seventeen ACEs: echo to own gateway `10.10.20.1`; DNS UDP/TCP 53, HTTP TCP 80 and echo to HQ-SRV1 `10.10.40.10`; SSH TCP 22 and echo to each Management subnet (`10.10.10.0/28`, `10.20.10.0/28`, `10.30.10.0/28`) and separately HQ-R1 `10.255.1.1`; echo to all three Users subnets (`10.10.30.0/26`, `10.20.30.0/27`, `10.30.30.0/27`); explicit deny for everything else. Management destinations use their zone prefixes, plus the explicit HQ-R1 transit-address exception. IT addressing is static, so this ACL needs no client DHCP exception.
 
-This implements IT-source TP-03/04/05 and the relevant TP-13 default deny. IT-to-Guest and IT-to-external HTTP/ICMP are unlisted and are therefore denied; earlier IT external successes were pre-policy reachability tests. HQ PAT ACL 20 can retain the IT prefix: NAT eligibility is not permission through IT_HQ_IN. Requests from IT enter Vlan20; replies return toward Vlan20 without traversing this inbound ACL. Existing Users echo-reply permits retain the diagnostic reply path. SSH follow-up packets from IT still match destination TCP 22. Do not add a broad permit ip rule. Server and Management source restrictions are described below; edge-inbound controls remain pending.
+This implements IT-source TP-03/04/05 and the relevant TP-13 default deny. IT-to-Guest and IT-to-external HTTP/ICMP are unlisted and are therefore denied; earlier IT external successes were pre-policy reachability tests. HQ PAT ACL 20 can retain the IT prefix: NAT eligibility is not permission through IT_HQ_IN. Requests from IT enter Vlan20; replies return toward Vlan20 without traversing this inbound ACL. Existing Users echo-reply permits retain the diagnostic reply path. SSH follow-up packets from IT still match destination TCP 22. Do not add a broad permit ip rule. Server and Management source restrictions are described below; Internet ingress controls and their tested scope are described below.
 
 The installed HQ-L3 accepted all seventeen ACEs and the Vlan20 inbound binding. The supplied batch demonstrates IT internal HTTP and diagnostics, Users echo replies, HQ-R1/RZE-R1 SSH and Guest-gateway/external ICMP denials with a +16 deny delta. External HTTP timeout is subsequently author-confirmed; no separate screenshot is supplied. See [Validation](VALIDATION.md) for exact destinations and limitations. Rollback removes only `IT_HQ_IN` inbound from Vlan20. The actual full HQ-L3 export is reviewed; saving is author-reported, without an exact reopened-state claim.
 
@@ -176,7 +176,7 @@ ip access-list extended SERVERS_HQ_IN
  deny ip any any
 ```
 
-The supplied batch shows HQ-PC1 DHCP, IT intranet HTTP/server ping, and four server-originated ping denials with +16 deny hits. Remaining assigned DHCP and intranet checks are author-reported. The initial server self-ping was followed by a successful 4/4 gateway test to 10.10.40.1. Working_l3 now has a new disk identity after the save follow-up; exact contents and full persistence are not independently verified. See [Validation](VALIDATION.md) for exact scope. These are service checks affected by the new server reply filter. Direct renewal replies and TCP DNS require separate evidence before claiming those rules exercised. Successful prior IT/Guest/Users source tests are not reassigned. Management source controls are described below; ISP-facing controls remain pending.
+The supplied batch shows HQ-PC1 DHCP, IT intranet HTTP/server ping, and four server-originated ping denials with +16 deny hits. Remaining assigned DHCP and intranet checks are author-reported. The initial server self-ping was followed by a successful 4/4 gateway test to 10.10.40.1. Working_l3 now has a new disk identity after the save follow-up; exact contents and full persistence are not independently verified. See [Validation](VALIDATION.md) for exact scope. These are service checks affected by the new server reply filter. Direct renewal replies and TCP DNS require separate evidence before claiming those rules exercised. Successful prior IT/Guest/Users source tests are not reassigned. Management source controls are described below; Internet ingress controls are described below.
 
 HQ Management source slice (full export, IT SSH and representative denial reviewed): `MGMT_HQ_IN` inbound on HQ-L3 Vlan10, source `10.10.10.0/28`. Four ACEs retain SSH replies from source TCP 22 to IT with ACK/RST, ICMP echo-reply to IT, and echo to the Management gateway `10.10.10.1`; deny remaining routed traffic from this VLAN. Static Management addressing needs no DHCP exception. Existing VTY ACL 10 remains in place and controls who can log in; this SVI ACL controls traffic arriving from the Management VLAN.
 
@@ -221,6 +221,23 @@ interface GigabitEthernet0/0.10
 ```
 
 After both branches, run the six planned section samples above. Save changed device configurations, export HQ-L3/KAT-R1/RZE-R1 together and save working_l3; a new checkpoint or reopen is not required for each branch. Static acceptance does not establish runtime behavior. Branch router-local traffic and same-VLAN traffic have the same scope limitations described for HQ.
+
+Internet ingress slice (full capture and three representative traffic checks reviewed): `ISP_IN` inbound on HQ-R1 G0/2. Outside-to-inside IOS processing evaluates the input ACL before NAT translates the public destination; therefore these permits target `198.51.100.2`, not private client prefixes. Only EXT-SRV1 `203.0.113.10` supplies the lab's external services. Permit its HTTP TCP source 80 and DNS TCP source 53 with ACK/RST, UDP DNS source 53, and ICMP echo-reply; deny all other input. Existing overload, default routing and VTY ACLs retain their roles. [Cisco NAT order of operations](https://www.cisco.com/c/en/us/support/docs/ip/network-address-translation-nat/6209-5.html).
+
+```ios
+ip access-list extended ISP_IN
+ permit tcp host 203.0.113.10 eq 80 host 198.51.100.2 established
+ permit udp host 203.0.113.10 eq 53 host 198.51.100.2
+ permit tcp host 203.0.113.10 eq 53 host 198.51.100.2 established
+ permit icmp host 203.0.113.10 host 198.51.100.2 echo-reply
+ deny ip any any
+```
+
+Confirm all five ACEs are accepted on the installed HQ-R1 before applying `ip access-group ISP_IN in` under G0/2. Selected external ICMP and Guest HTTP/DNS reply paths now pass with ISP_IN permit hits; see Validation for untested paths. Rollback removes only this inbound binding. Preserve a pre-change v11_management-acl milestone and return to working_l3; save/export HQ-R1 once at section end.
+
+Three representative acceptance checks (results recorded in Validation): HQ-PC1 ping to 203.0.113.10 succeeds; KAT-GUEST1 loads http://www.lab.example; EXT-SRV1 ping to the public HQ address 198.51.100.2 fails, The supplied denial counter is a total of four, with no before snapshot; it is not a measured increment. For a repeat exercise, collect counters before and after only if a delta is required. UDP DNS hits support a fresh DNS exchange; a cached browser result alone does not demonstrate DNS filtering. TCP DNS, ICMP error delivery and other paths are not separately tested. There is no permit for arbitrary ICMP errors or ISP-originated echo replies in this narrow service-host policy.
+
+The denied public-address echo test reaches HQ-R1 over the existing ISP connected route and does not need a private route or NAT mapping. It demonstrates explicit unsolicited ICMP filtering at the edge, not a direct attempt to an internal server. Review that no static inbound service mappings exist, and keep that distinction in TP-12 evidence. This is stateless filtering with PAT: established only checks TCP flags, and UDP/ICMP reply-type permits do not verify a preceding request. Do not claim stateful firewall protection or exhaustive unsolicited-packet blocking from these samples. Any later test requiring a temporary ISP route belongs in a separate verification copy.
 
 ## Build order
 

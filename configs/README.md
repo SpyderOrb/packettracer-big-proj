@@ -5,7 +5,7 @@ One current capture per device. Configuration files describe the supplied state;
 | Device | Capture | Reviewed scope / limitation |
 |---|---|---|
 | HQ-L3 | [HQ-L3.cfg](HQ-L3.cfg) | VLAN gateways, DHCP relay, inbound MGMT_HQ_IN on Vlan10, IT_HQ_IN on Vlan20, USERS_HQ_IN on Vlan30, SERVERS_HQ_IN on Vlan40 and GUEST_HQ_IN on Vlan50, LACP/STP, routed G0/1 at 10.255.1.2/30, core-edge OSPF, SSH v2 and IT-only VTY ACL; complete capture with account credential redacted |
-| HQ-R1 | [HQ-R1.cfg](HQ-R1.cfg) | Routed G0/0 at 10.255.1.1/30, core-edge and shared-WAN OSPF, G0/1 at 10.255.0.1/29, ISP edge/default origination and PAT with seven-subnet ACL 20, SSH v2, admin privilege 15 and IT-only VTY ACL; account credential redacted; complete capture |
+| HQ-R1 | [HQ-R1.cfg](HQ-R1.cfg) | Routed G0/0 at 10.255.1.1/30, core-edge and shared-WAN OSPF, G0/1 at 10.255.0.1/29, ISP edge/default origination, PAT with seven-subnet ACL 20 and inbound ISP_IN on G0/2, SSH v2, admin privilege 15 and IT-only VTY ACL; account credential redacted; complete capture |
 | HQ-SW1 | [HQ-SW1.cfg](HQ-SW1.cfg) | Vlan10 .2/28, gateway .1, SSH v2, IT-only VTY ACL, access VLANs, Po1 and secondary STP priority; account and enable credentials redacted |
 | HQ-SW2 | [HQ-SW2.cfg](HQ-SW2.cfg) | Vlan10 .3/28, gateway .1, SSH v2, IT-only VTY ACL, access VLANs and Po2; account and enable credentials redacted |
 | KAT-R1 | [KAT-R1.cfg](KAT-R1.cfg) | Complete Sep 19 capture: inbound MGMT_KAT_IN on G0/0.10, USERS_KAT_IN on G0/0.30 and GUEST_KAT_IN on G0/0.50, DHCP relay, VLAN 10/30/50 gateways and native unaddressed VLAN 999; WAN /29 addressing and OSPF area 0 with passive LANs; SSH v2, IT-only ACL 10 on VTY 0–15; account/enable credentials redacted |
@@ -34,6 +34,10 @@ Sep 19 IT review: fresh complete HQ-L3 export adds only the seventeen IT_HQ_IN A
 Sep 19 Servers review: complete fresh HQ-L3 capture adds the 27 SERVERS_HQ_IN ACEs and Vlan40 inbound binding; all other non-credential settings match the preceding IT-stage capture. Raw original preserved privately, public credential redacted. Parser acceptance and IT HTTP established matches are shown; additional service reports, successful gateway follow-up and updated working-file identity are recorded in Validation.
 
 Sep 19 Management review: complete fresh HQ-L3/KAT-R1/RZE-R1 exports add only the four planned Management ACEs per site and their inbound VLAN 10 bindings. Raw exports retained privately before public credential redaction. Three access-switch SSH sessions and two sampled source denials are recorded in Validation; unshown ICMP reply behavior is not claimed tested.
+
+Sep 20 ISP ingress review: complete fresh HQ-R1 export adds the five ISP_IN ACEs and G0/2 inbound binding. Other non-credential commands match the prior capture. Raw original retained privately; public account credential redacted. Selected reply permits and public-edge echo denial are recorded in Validation, without a new NAT-table or full persistence claim.
+
+Sep 20 baseline export review: fresh full captures for all ten devices match their preceding reviewed non-credential command sets, including clean HQ-SW1 Fa0/1 VLAN 30. Originals retained privately before public credential redaction. Export association follows the author-reported v12 reopen workflow; representative validation and saved-file identities are recorded in Validation.
 
 ## Restore notes
 
