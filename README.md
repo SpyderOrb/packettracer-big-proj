@@ -1,4 +1,4 @@
-# HQ + Branches NOC Lab
+# 🕸️ HQ + Branches NOC Lab
 
 [![Cisco Packet Tracer topology: Krakow HQ, Katowice and Rzeszow branches, shared WAN and simulated Internet](docs/packet-tracer-topology.png)](docs/packet-tracer-topology.png)
 
