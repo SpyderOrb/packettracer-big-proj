@@ -1,12 +1,11 @@
 # 🕸️ HQ + Branches NOC Lab
 
 [![Logical network design: HQ collapsed core, two branches and a shared WAN](docs/topology.png)](docs/topology.png)
+*Logical architecture. Implementation progress and tested behavior are documented in [Validation](docs/VALIDATION.md).*
 
 A Cisco Packet Tracer network connecting a headquarters in **Kraków** with branches in **Katowice** and **Rzeszów**. The lab follows the work of a network support engineer: configure the network, verify traffic, diagnose faults and document recovery.
 
 [![Cisco Packet Tracer topology: Krakow HQ, Katowice and Rzeszow branches, shared WAN and simulated Internet](docs/packet-tracer-topology.png)](docs/packet-tracer-topology.png)
-
-*Logical architecture. Implementation progress and tested behavior are documented in [Validation](docs/VALIDATION.md).*
 
 ## The network
 
