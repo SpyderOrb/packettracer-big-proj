@@ -76,6 +76,8 @@ VLAN IDs repeat across sites; their IP subnets do not. Corporate site prefixes a
 
 Use VLAN 999 as an unused native/parking VLAN with no IP interface or clients. HQ Po1 and Po2 allow 10,20,30,40,50,999; branch trunks allow 10,30,50,999. Match native VLAN 999 at both ends, including branch router trunks. Configure LACP `mode active` and consistent trunk settings on each bundle and its members; use group 1 at both Po1 ends and group 2 at both Po2 ends. Check the 3560 trunk-encapsulation syntax with CLI help before forcing trunk mode. Shut unused access ports, including HQ-SW1 G0/1. Management is reserved for device administration.
 
+**Implementation gap:** the published access-switch captures still contain unused ports without an explicit `shutdown`, including HQ-SW1 G0/1; those ports are not assigned to parking VLAN 999. The preceding shutdown instruction is a target requirement, not completed hardening. Apply it only after checking actual cabling in an identified working copy, then verify active clients and trunks, save and refresh the affected captures. The native VLAN 999 trunk settings alone do not establish unused-port hardening.
+
 | Network | Subnet | Addresses |
 |---|---|---|
 | Shared OSPF transit | 10.255.0.0/29 | HQ G0/1 .1; KAT G0/1 .2; RZE G0/1 .3 |

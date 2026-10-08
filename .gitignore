@@ -24,3 +24,7 @@ id_ed25519
 *.deb
 *.AppImage
 *.pkg.tar.*
+
+# Offline Python checks
+__pycache__/
+*.py[cod]

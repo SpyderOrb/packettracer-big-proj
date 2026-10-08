@@ -1,6 +1,6 @@
 # Validation
 
-**Latest runtime evidence reviewed: 2026-09-20.** Documentation and local file identity checked on 2026-09-25; no new Packet Tracer traffic tests were run for that review.
+**Latest runtime evidence reviewed: 2026-09-20.** Documentation, configuration captures and local file identity checked on 2026-10-07; no new Packet Tracer traffic tests were run for that review.
 
 | Area | Accepted scope | Limits |
 |---|---|---|
@@ -15,7 +15,7 @@ The lab author ran the Packet Tracer checks. This record reviews supplied screen
 
 ## Checkpoints
 
-No `.pkt` is currently published. On Sep 20, `packet-tracer/HQ-Branches-NOC-Lab.pkt` was recorded as the local clean baseline within the six-check representative scope below. **The file at that path has since changed:** the Sep 25 filesystem review found 156,153 bytes, SHA-256 `247f893b6f124a731fc2dc1c8929cd7fe15b3e3311edcfc4938de09d7338f14f`. Its contents and runtime behavior were not rechecked; it does not inherit the Sep 20 acceptance from its filename. The table preserves historical identities and their evidence limits. Readers can rebuild from the [build sheet](NETWORK.md#build-order) and [configuration restore notes](../configs/README.md#restore-notes), but no downloadable validated baseline is offered.
+No `.pkt` is currently published. On Sep 20, `packet-tracer/HQ-Branches-NOC-Lab.pkt` was recorded as the local clean baseline within the six-check representative scope below. **The file at that path has since changed:** the Oct 7 filesystem review found 151,934 bytes, SHA-256 `69b0e7da627d82f0195d29708e40b64f486c01a08dc46d0cae435caff93a60bb`. Its contents and runtime behavior were not rechecked; it does not inherit the Sep 20 acceptance from its filename. The table preserves historical identities and their evidence limits. Readers can rebuild from the [build sheet](NETWORK.md#build-order) and [configuration restore notes](../configs/README.md#restore-notes), but no downloadable validated baseline is offered.
 
 | State | Identity | Evidence / limitation |
 |---|---|---|
@@ -33,10 +33,14 @@ No `.pkt` is currently published. On Sep 20, `packet-tracer/HQ-Branches-NOC-Lab.
 | v11 management-acl | Observed local file: 155,143 bytes; SHA-256 `627fa1f203c7ad31c1326451916356319199ffba7dabbfe22c7927d268706b97` | Intended pre-ISP-filter milestone; original and canonical filename copy retained locally. Exact contents/reopen association unverified; not published |
 | v12 baseline-candidate | Observed local file: 155,875 bytes; SHA-256 `012c5a42f87f0c94d0760cc8942519c606893bf7c57db09f09e5e3edb99be5a2` | Six representative reopen checks pass in the supplied context; fresh full exports are subsequently reviewed below. Original and canonical filename copy retained locally; not promoted to the final baseline or published |
 | Local representative baseline · Sep 20 | 156,099 bytes; SHA-256 `b1acb7ee9f8902b9482ffb9568c48b34ae469457ef803270e900d1160b35f8f9` | Copy of the subsequently saved original v12 filename. Six reopen samples and fresh export set associated by author report; all ten non-credential configurations match reviewed settings. Earlier canonical v12 bytes preserved. Unpublished; not an exhaustive runtime or independent binary-content verification |
+| Same baseline path · Sep 25 | 156,153 bytes; SHA-256 `247f893b6f124a731fc2dc1c8929cd7fe15b3e3311edcfc4938de09d7338f14f` | Filesystem observation only; changed bytes were not opened or tested during that review |
+| Same baseline path · Oct 7 | 151,934 bytes; SHA-256 `69b0e7da627d82f0195d29708e40b64f486c01a08dc46d0cae435caff93a60bb` | Latest filesystem observation; contents, export correspondence and runtime behavior remain unverified |
 
 Other results below are working-session evidence unless explicitly tied to a recorded file identity. Baseline acceptance covers the documented representative batch and configuration review; it does not mark every B1–B10 or TP-01–TP-13 subcheck as passed.
 
 ## Verified results
+
+The October 7 offline review passed the [reusable configuration checker](../scripts/check-configs.py): ten captures, twelve named ACL structures/attachments, eight SSH/VTY policies, six DHCP relays and seven PAT prefixes. It checks selected configuration invariants, not the complete traffic policy. The review also found [unused-port hardening still absent from the access-switch captures](NETWORK.md#vlans-and-addressing); no switch settings were changed during the review.
 
 Rows are a dated history. A pending item or pre-policy success describes that stage; later follow-ups record recoveries and restrictions. Current acceptance is summarized above, with remaining coverage in the [test checklist](#test-checklist).
 

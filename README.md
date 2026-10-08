@@ -32,3 +32,9 @@ The design uses **20 devices and 21 physical links**. Internet services are simu
 1. Use **Cisco Packet Tracer 9.0.1** and follow the [build order](docs/NETWORK.md#build-order).
 2. Check [checkpoint availability and tested scope](docs/VALIDATION.md#checkpoints) before using a saved state. Keep a separate working copy for changes.
 3. Repeat the relevant [checks](docs/VALIDATION.md#test-checklist) and compare results with the configuration captures.
+
+## Review the configurations offline
+
+From the repository root, run `python3 scripts/check-configs.py` with Python 3.9 or newer; no extra packages or simulator are needed. The [checker](scripts/check-configs.py) verifies selected capture invariants: device names, credential redaction, ACL counts/attachments/final denies, SSH restrictions, DHCP relays and PAT settings. It exits with a nonzero status on a mismatch.
+
+A passing static check does not validate every ACL rule, traffic behavior or a `.pkt` file. Runtime evidence and outstanding checks remain in [Validation](docs/VALIDATION.md).
