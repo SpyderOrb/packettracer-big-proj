@@ -37,4 +37,6 @@ The design uses **20 devices and 21 physical links**. Internet services are simu
 
 From the repository root, run `python3 scripts/check-configs.py` with Python 3.9 or newer; no extra packages or simulator are needed. The [checker](scripts/check-configs.py) verifies selected capture invariants: device names, credential redaction, ACL counts/attachments/final denies, SSH restrictions, DHCP relays and PAT settings. It exits with a nonzero status on a mismatch.
 
+The same check runs in [GitHub Actions](.github/workflows/check-configs.yml) on pushes to `main` and pull requests that change the captures, checker or workflow. It can also be started manually from the Actions tab.
+
 A passing static check does not validate every ACL rule, traffic behavior or a `.pkt` file. Runtime evidence and outstanding checks remain in [Validation](docs/VALIDATION.md).

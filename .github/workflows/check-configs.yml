@@ -1,0 +1,31 @@
+name: Static configuration audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'configs/**'
+      - 'scripts/check-configs.py'
+      - '.github/workflows/check-configs.yml'
+  pull_request:
+    paths:
+      - 'configs/**'
+      - 'scripts/check-configs.py'
+      - '.github/workflows/check-configs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: Check published IOS captures
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Audit configuration captures
+        run: python3 scripts/check-configs.py
