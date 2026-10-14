@@ -6,11 +6,13 @@ on:
     paths:
       - 'configs/**'
       - 'scripts/check-configs.py'
+      - 'tests/**'
       - '.github/workflows/check-configs.yml'
   pull_request:
     paths:
       - 'configs/**'
       - 'scripts/check-configs.py'
+      - 'tests/**'
       - '.github/workflows/check-configs.yml'
   workflow_dispatch:
 
@@ -29,3 +31,5 @@ jobs:
           persist-credentials: false
       - name: Audit configuration captures
         run: python3 scripts/check-configs.py
+      - name: Test audit failure detection
+        run: python3 -m unittest discover -s tests -v

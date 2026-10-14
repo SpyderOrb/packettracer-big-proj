@@ -95,6 +95,10 @@ def audit(root):
             check(len(rules) == count, f"{device}/{name}: expected {count} rules, got {len(rules)}")
             check(bool(rules) and rules[-1] == "deny ip any any",
                   f"{device}/{name}: missing final explicit deny")
+            check(not any(rule.split()[:4] == ["permit", "ip", "any", "any"] for rule in rules),
+                  f"{device}/{name}: unrestricted IP permit")
+            check(not any(rule.split()[:4] == ["deny", "ip", "any", "any"] for rule in rules[:-1]),
+                  f"{device}/{name}: catch-all deny before the final rule")
 
         actual_helpers = [(iface, s) for iface, body in interfaces.items() for s in body
                           if s.startswith("ip helper-address ")]
@@ -117,16 +121,23 @@ def audit(root):
                         check(command in body, f"{device}/{header}: missing {command}")
             check(sorted(covered) == list(range(16)), f"{device}: VTY 0-15 coverage mismatch")
 
+        # Only the HQ edge translates traffic, using the single planned overload.
+        # Extra static mappings could publish internal services without changing it.
+        nat_rules = [header for header in blocks if header.startswith("ip nat ")]
+        expected_nat = (["ip nat inside source list 20 interface GigabitEthernet0/2 overload"]
+                        if device == "HQ-R1" else [])
+        check(nat_rules == expected_nat, f"{device}: NAT translation rules mismatch")
+        roles = [(iface, s) for iface, body in interfaces.items() for s in body
+                 if s in ("ip nat inside", "ip nat outside")]
+        expected_roles = ([("GigabitEthernet0/0", "ip nat inside"),
+                           ("GigabitEthernet0/1", "ip nat inside"),
+                           ("GigabitEthernet0/2", "ip nat outside")]
+                          if device == "HQ-R1" else [])
+        check(sorted(roles) == expected_roles, f"{device}: NAT interface roles mismatch")
+
         if device == "HQ-R1":
             check(sorted(s for s in commands if s.startswith("access-list 20 ")) ==
                   sorted(f"access-list 20 permit {s}" for s in PAT_SOURCES), "HQ-R1: PAT sources mismatch")
-            check("ip nat inside source list 20 interface GigabitEthernet0/2 overload" in commands,
-                  "HQ-R1: missing PAT overload")
-            roles = [(iface, s) for iface, body in interfaces.items() for s in body
-                     if s in ("ip nat inside", "ip nat outside")]
-            check(sorted(roles) == [("GigabitEthernet0/0", "ip nat inside"),
-                                    ("GigabitEthernet0/1", "ip nat inside"),
-                                    ("GigabitEthernet0/2", "ip nat outside")], "HQ-R1: NAT interface roles mismatch")
     return errors
 
 
