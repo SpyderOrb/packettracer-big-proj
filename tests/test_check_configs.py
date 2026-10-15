@@ -34,6 +34,37 @@ class ConfigurationAuditTests(unittest.TestCase):
     def test_published_captures_pass(self):
         self.assertEqual(CHECKER.audit(self.root), [])
 
+    def test_ir001_wrong_client_vlan_is_rejected(self):
+        self.replace("HQ-SW1", " switchport access vlan 30", " switchport access vlan 50")
+        self.assert_rejected("HQ-SW1/FastEthernet0/1: expected access VLAN 30")
+
+    def test_endpoint_trunk_mode_is_rejected(self):
+        self.replace("HQ-SW2", " switchport access vlan 50\n switchport mode access\n",
+                     " switchport access vlan 50\n switchport mode trunk\n")
+        self.assert_rejected("HQ-SW2/FastEthernet0/1: expected static access mode")
+
+    def test_endpoint_shutdown_is_rejected(self):
+        self.replace("RZE-SW1", "\ninterface FastEthernet0/1\n",
+                     "\ninterface FastEthernet0/1\n shutdown\n")
+        self.assert_rejected("RZE-SW1/FastEthernet0/1: endpoint port is shut down")
+
+    def test_ir002_passive_wan_is_rejected(self):
+        self.replace("KAT-R1", " no passive-interface GigabitEthernet0/1\n", "")
+        self.assert_rejected("KAT-R1: OSPF passive-interface policy mismatch")
+
+    def test_ospf_enabled_on_client_vlan_is_rejected(self):
+        self.replace("HQ-L3", " passive-interface default\n",
+                     " passive-interface default\n no passive-interface Vlan30\n")
+        self.assert_rejected("HQ-L3: OSPF passive-interface policy mismatch")
+
+    def test_missing_ospf_passive_default_is_rejected(self):
+        self.replace("HQ-R1", " passive-interface default\n", "")
+        self.assert_rejected("HQ-R1: OSPF passive-interface policy mismatch")
+
+    def test_unplanned_ospf_process_is_rejected(self):
+        self.replace("ISP-R1", "\nend", "\nrouter ospf 1\n passive-interface default\nend")
+        self.assert_rejected("ISP-R1: OSPF process inventory mismatch")
+
     def test_allow_all_replacing_service_permit_is_rejected(self):
         self.replace("KAT-R1",
                      " permit tcp 10.20.30.0 0.0.0.31 host 10.10.40.10 eq www",

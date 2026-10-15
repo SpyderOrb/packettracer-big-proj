@@ -15,6 +15,19 @@ DEVICES = (
     "RZE-R1", "RZE-SW1", "ISP-R1", "WAN-SW",
 )
 CORPORATE = DEVICES[:8]
+# Endpoint ports and OSPF exceptions from docs/NETWORK.md.
+ACCESS_PORTS = {
+    "HQ-SW1": {"FastEthernet0/1": 30, "FastEthernet0/2": 20, "FastEthernet0/3": 40},
+    "HQ-SW2": {"FastEthernet0/1": 50, "FastEthernet0/2": 30},
+    "KAT-SW1": {"FastEthernet0/1": 30, "FastEthernet0/2": 50},
+    "RZE-SW1": {"FastEthernet0/1": 30, "FastEthernet0/2": 50},
+}
+OSPF_ACTIVE = {
+    "HQ-L3": ("GigabitEthernet0/1",),
+    "HQ-R1": ("GigabitEthernet0/0", "GigabitEthernet0/1"),
+    "KAT-R1": ("GigabitEthernet0/1",),
+    "RZE-R1": ("GigabitEthernet0/1",),
+}
 ACL_MAP = {
     "HQ-L3": {
         "MGMT_HQ_IN": ("Vlan10", 4), "IT_HQ_IN": ("Vlan20", 17),
@@ -82,6 +95,25 @@ def audit(root):
 
         interfaces = {k.removeprefix("interface "): v for k, v in blocks.items()
                       if k.startswith("interface ")}
+        for iface, vlan in ACCESS_PORTS.get(device, {}).items():
+            body = interfaces.get(iface, [])
+            check([s for s in body if s.startswith("switchport mode ")] == ["switchport mode access"],
+                  f"{device}/{iface}: expected static access mode")
+            check([s for s in body if s.startswith("switchport access vlan ")] ==
+                  [f"switchport access vlan {vlan}"], f"{device}/{iface}: expected access VLAN {vlan}")
+            check("shutdown" not in body, f"{device}/{iface}: endpoint port is shut down")
+
+        ospf = {k: v for k, v in blocks.items() if k.startswith("router ospf ")}
+        check(set(ospf) == ({"router ospf 1"} if device in OSPF_ACTIVE else set()),
+              f"{device}: OSPF process inventory mismatch")
+        if device in OSPF_ACTIVE:
+            passive = [s for s in ospf.get("router ospf 1", [])
+                       if s.startswith(("passive-interface ", "no passive-interface "))]
+            wanted_passive = ["passive-interface default"] + [
+                f"no passive-interface {iface}" for iface in OSPF_ACTIVE[device]
+            ]
+            check(sorted(passive) == sorted(wanted_passive), f"{device}: OSPF passive-interface policy mismatch")
+
         expected = ACL_MAP.get(device, {})
         acls = {k.removeprefix("ip access-list extended "): v for k, v in blocks.items()
                 if k.startswith("ip access-list extended ")}
@@ -147,5 +179,6 @@ if __name__ == "__main__":
         print(f"FAIL: {finding}", file=sys.stderr)
     if findings:
         sys.exit(1)
-    print("PASS: 10 captures, 12 ACL structures/bindings, 8 SSH/VTY policies, 6 helpers and 7 PAT sources.")
+    print("PASS: 10 captures, 9 endpoint ports, 4 OSPF passive-interface policies, "
+          "12 ACL structures/bindings, 8 SSH/VTY policies, 6 helpers and 7 PAT sources.")
     print("Static checks only; ACL semantics, Packet Tracer runtime and saved-file correspondence are not validated.")

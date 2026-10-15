@@ -35,10 +35,10 @@ The design uses **20 devices and 21 physical links**. Internet services are simu
 
 ## Review the configurations offline
 
-From the repository root, run `python3 scripts/check-configs.py` with Python 3.9 or newer; no extra packages or simulator are needed. The [checker](scripts/check-configs.py) verifies selected capture invariants: device names, credential redaction, ACL counts/attachments/final denies, SSH restrictions, DHCP relays and PAT settings. It also rejects unrestricted `permit ip any any` rules, early catch-all denies and NAT rules or interface roles outside the documented HQ overload design. It exits with a nonzero status on a mismatch.
+From the repository root, run `python3 scripts/check-configs.py` with Python 3.9 or newer; no extra packages or simulator are needed. The [checker](scripts/check-configs.py) verifies selected capture invariants: device names, credential redaction, nine endpoint ports (access mode, VLAN and absence of `shutdown`), OSPF process inventory and passive-interface exceptions, ACL counts/attachments/final denies, SSH restrictions, DHCP relays and PAT settings. It also rejects unrestricted `permit ip any any` rules, early catch-all denies and NAT rules or interface roles outside the documented HQ overload design. It exits with a nonzero status on a mismatch.
 
-Run `python3 -m unittest discover -s tests -v` to exercise [failure detection](tests/test_check_configs.py) using temporary copies of the captures. The tests cover ACL changes that preserve the rule count, unintended NAT and the command-line failure status; they leave the original files unchanged.
+Run `python3 -m unittest discover -s tests -v` to exercise [failure detection](tests/test_check_configs.py) using temporary copies of the captures. The tests cover the wrong-VLAN and passive-WAN configuration faults from IR-001/IR-002, endpoint mode/shutdown, OSPF scope, ACL changes that preserve the rule count, unintended NAT and the command-line failure status; they leave the original files unchanged.
 
 Both commands run in [GitHub Actions](.github/workflows/check-configs.yml) on pushes to `main` and pull requests that change the captures, checker, tests or workflow. They can also be started manually from the Actions tab.
 
-A passing static check does not validate every ACL rule, traffic behavior or a `.pkt` file. Runtime evidence and outstanding checks remain in [Validation](docs/VALIDATION.md).
+A passing static check does not verify actual cabling, OSPF neighbor state, traffic behavior or a `.pkt` file. It checks selected configuration rules rather than every routing/ACL command. Runtime evidence and outstanding checks remain in [Validation](docs/VALIDATION.md).
